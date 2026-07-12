@@ -468,6 +468,23 @@ td:last-child.stat-bad { color: var(--red); }
   margin: 0;
 }
 
+/* damage numbers jump off whoever got hit */
+.dmg-pop {
+  position: fixed;
+  font-family: var(--font-stencil);
+  font-weight: 900;
+  color: var(--yellow);
+  text-shadow: 2px 2px 0 var(--edge);
+  pointer-events: none;
+  animation: dmg-float 0.9s ease-out forwards;
+  z-index: 15;
+}
+.dmg-pop.hurt { color: var(--red); }
+@keyframes dmg-float {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-48px); opacity: 0; }
+}
+
 /* fight events land big and crooked, like a card held up at ringside */
 #fight-event {
   position: absolute;

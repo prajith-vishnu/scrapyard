@@ -177,6 +177,7 @@ function handleFightEvents() {
     if (ev.type === 'hit') {
       const attacker = ev.target === 'foe' ? 'you' : 'foe';
       renderer.hitSpark(ev.target, ev.dmg);
+      ui.popDamage(renderer.worldToScreen(ev.target), ev.dmg, ev.target === 'foe');
       if (ev.kind === 'zapper') {
         renderer.zapBolt(attacker);
         audio.zap();

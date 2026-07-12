@@ -161,6 +161,18 @@ export function updateBattleReadout(fight) {
   $('bt-time').textContent = String(Math.floor(fight.time));
 }
 
+// a number jumps off whoever got hit and fades on the way up
+export function popDamage(pos, dmg, mine) {
+  const el = document.createElement('div');
+  el.className = 'dmg-pop' + (mine ? '' : ' hurt');
+  el.textContent = String(Math.round(dmg));
+  el.style.left = (pos.x + (Math.random() - 0.5) * 36) + 'px';
+  el.style.top = pos.y + 'px';
+  el.style.fontSize = (0.9 + Math.min(dmg / 55, 0.9)) + 'rem';
+  $('battle-ui').appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
 let eventTimer = null;
 export function flashEvent(text) {
   const el = $('fight-event');

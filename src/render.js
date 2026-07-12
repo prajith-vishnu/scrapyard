@@ -1329,6 +1329,18 @@ export class Renderer {
     this.camera.lookAt(this.camTarget);
   }
 
+  // screen position above a robot, for the damage numbers
+  worldToScreen(slotName) {
+    const bot = this.bots[slotName];
+    const v = bot.group.position.clone();
+    v.y += Math.max(1.3, bot.height * 0.8);
+    v.project(this.camera);
+    return {
+      x: (v.x * 0.5 + 0.5) * window.innerWidth,
+      y: (-v.y * 0.5 + 0.5) * window.innerHeight,
+    };
+  }
+
   onResize() {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
