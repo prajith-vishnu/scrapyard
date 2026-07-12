@@ -520,6 +520,75 @@ export class Renderer {
     road1.receiveShadow = true;
     scenery.add(road1, road2);
 
+    // crushed car bales stacked into walls along two sides of the pit
+    const baleMats = [
+      new THREE.MeshStandardMaterial({ color: 0x8a5a3a, metalness: 0.55, roughness: 0.75 }),
+      new THREE.MeshStandardMaterial({ color: 0x5c6066, metalness: 0.65, roughness: 0.6 }),
+      new THREE.MeshStandardMaterial({ color: 0x6e5a42, metalness: 0.5, roughness: 0.8 }),
+      new THREE.MeshStandardMaterial({ color: 0x7d4438, metalness: 0.55, roughness: 0.7 }),
+    ];
+    const baleGeo = new THREE.BoxGeometry(2.0, 0.55, 1.1);
+    for (const side of [1, -1]) {
+      for (let i = 0; i < 7; i++) {
+        const a = side * Math.PI / 2 + (i - 3) * 0.17;
+        const r = 19.5;
+        const stack = 2 + (i % 2);
+        for (let k = 0; k < stack; k++) {
+          const bale = new THREE.Mesh(baleGeo, baleMats[(i + k) % baleMats.length]);
+          bale.position.set(
+            Math.cos(a) * r + (Math.random() - 0.5) * 0.3,
+            0.29 + k * 0.58,
+            Math.sin(a) * r + (Math.random() - 0.5) * 0.3
+          );
+          bale.rotation.y = -a + Math.PI / 2 + (Math.random() - 0.5) * 0.12;
+          bale.castShadow = true;
+          bale.receiveShadow = true;
+          scenery.add(bale);
+        }
+      }
+    }
+
+    // tire stacks, because every junkyard has tire stacks
+    const tireGeo = new THREE.TorusGeometry(0.42, 0.17, 8, 14);
+    const tireMat = new THREE.MeshStandardMaterial({ color: 0x1d1e21, roughness: 0.95 });
+    for (const [tx, tz] of [[17, -12], [-18, 12], [-16, -13], [22, 10], [-27, -3], [13, 19]]) {
+      const stack = 3 + Math.floor(Math.random() * 3);
+      for (let k = 0; k < stack; k++) {
+        const tire = new THREE.Mesh(tireGeo, tireMat);
+        tire.rotation.x = Math.PI / 2;
+        tire.position.set(tx + (Math.random() - 0.5) * 0.15, 0.17 + k * 0.34, tz + (Math.random() - 0.5) * 0.15);
+        tire.castShadow = true;
+        scenery.add(tire);
+      }
+    }
+
+    // yard crane holding a bale over the big pile, mid-drop forever
+    const crane = new THREE.Group();
+    const craneMat = new THREE.MeshStandardMaterial({ color: 0x8c3b2e, metalness: 0.5, roughness: 0.6 });
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.7, 13, 0.7), craneMat);
+    tower.position.y = 6.5;
+    tower.castShadow = true;
+    const cab = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.3, 1.4), darkSteel);
+    cab.position.y = 12.6;
+    const boom = new THREE.Mesh(new THREE.BoxGeometry(8, 0.45, 0.5), craneMat);
+    boom.position.set(3.4, 13.4, 0);
+    boom.castShadow = true;
+    const counter = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.9, 0.9), darkSteel);
+    counter.position.set(-1.6, 13.4, 0);
+    const cable = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 8.4, 6), darkSteel);
+    cable.position.set(6.8, 9, 0);
+    const magnet = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.3, 16), darkSteel);
+    magnet.position.set(6.8, 4.7, 0);
+    magnet.castShadow = true;
+    const carried = new THREE.Mesh(baleGeo, baleMats[0]);
+    carried.position.set(6.8, 4.2, 0);
+    carried.castShadow = true;
+    crane.add(tower, cab, boom, counter, cable, magnet, carried);
+    crane.position.set(30, 0, -9);
+    const aim = Math.atan2(-(-6 - -9), 24 - 30);
+    crane.rotation.y = aim;
+    scenery.add(crane);
+
     // scattered rocks and scrub bushes out to the hills
     const rockGeo = new THREE.DodecahedronGeometry(1, 0);
     const rockMat = new THREE.MeshStandardMaterial({ color: 0x7b7266, roughness: 1, flatShading: true });
