@@ -75,6 +75,7 @@ export class Renderer {
     this.setupEnvironment();
     this.setupGround();
     this.setupScenery();
+    this.setupCity();
     this.setupClouds();
     this.setupParticles();
 
@@ -814,6 +815,92 @@ export class Renderer {
     this.scene.add(scenery);
   }
 
+  makeWindowTexture() {
+    // one face of a tower at night: mostly dark, some floors working late
+    const c = document.createElement('canvas');
+    c.width = 64; c.height = 128;
+    const g = c.getContext('2d');
+    g.fillStyle = '#0a0e14';
+    g.fillRect(0, 0, 64, 128);
+    const glows = ['#ffd98a', '#9fe8ff', '#e8f4ff', '#ffb066'];
+    for (let y = 6; y < 122; y += 9) {
+      for (let x = 4; x < 60; x += 8) {
+        if (Math.random() < 0.32) {
+          g.fillStyle = glows[Math.floor(Math.random() * glows.length)];
+          g.globalAlpha = 0.45 + Math.random() * 0.55;
+          g.fillRect(x, y, 4, 5);
+        }
+      }
+    }
+    g.globalAlpha = 1;
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+
+  setupCity() {
+    // the city the scrap comes from, glowing on the horizon in two
+    // clusters so it reads like a skyline and not a fence
+    const city = new THREE.Group();
+    this.beacons = [];
+    const winMats = [];
+    for (let i = 0; i < 4; i++) {
+      const tex = this.makeWindowTexture();
+      winMats.push(new THREE.MeshStandardMaterial({
+        color: 0x161c26, map: tex, emissiveMap: tex,
+        emissive: 0xffffff, emissiveIntensity: 0.85, roughness: 0.9,
+      }));
+    }
+    const mastMat = new THREE.MeshStandardMaterial({ color: 0x20262e, roughness: 0.8 });
+    const signColors = [0xff3fa8, 0xff8c3a, 0x4ee87c];
+    let signIdx = 0;
+    const clusters = [
+      { angle: Math.PI * 0.72, spread: 0.6, count: 34 },
+      { angle: -Math.PI * 0.15, spread: 0.42, count: 22 },
+    ];
+    for (const cl of clusters) {
+      for (let i = 0; i < cl.count; i++) {
+        const a = cl.angle + (Math.random() - 0.5) * cl.spread;
+        const r = 520 + Math.random() * 380;
+        const w = 26 + Math.random() * 42;
+        const d = 26 + Math.random() * 42;
+        const tall = Math.random() < 0.16;
+        const h = tall ? 120 + Math.random() * 70 : 30 + Math.random() * 70;
+        const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), winMats[i % winMats.length]);
+        const x = Math.cos(a) * r;
+        const z = Math.sin(a) * r;
+        b.position.set(x, this.hillHeight(x, z) + h / 2 - 2, z);
+        b.rotation.y = Math.random() * Math.PI;
+        city.add(b);
+        if (tall) {
+          // antenna mast with a blinking aircraft beacon
+          const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 1.2, 18, 6), mastMat);
+          mast.position.set(x, b.position.y + h / 2 + 9, z);
+          const beaconMat = new THREE.MeshStandardMaterial({
+            color: 0x330a0a, emissive: 0xff2a3a, emissiveIntensity: 1,
+          });
+          const beacon = new THREE.Mesh(new THREE.SphereGeometry(1.6, 8, 8), beaconMat);
+          beacon.position.set(x, mast.position.y + 10, z);
+          city.add(mast, beacon);
+          this.beacons.push({ mat: beaconMat, phase: Math.random() * Math.PI * 2 });
+          // the first few towers get a big lit sign facing the yard
+          if (signIdx < signColors.length) {
+            const sc = signColors[signIdx++];
+            const sign = new THREE.Mesh(
+              new THREE.PlaneGeometry(w * 0.7, 14),
+              new THREE.MeshStandardMaterial({ color: sc, emissive: sc, emissiveIntensity: 1.4, side: THREE.DoubleSide })
+            );
+            const pull = (Math.max(w, d) / 2 + 2) / r;
+            sign.position.set(x * (1 - pull), b.position.y + h * 0.2, z * (1 - pull));
+            sign.lookAt(0, sign.position.y, 0);
+            city.add(sign);
+          }
+        }
+      }
+    }
+    this.scene.add(city);
+  }
+
   setupClouds() {
     // soft billboard clouds drifting over the desert
     const c = document.createElement('canvas');
@@ -1237,6 +1324,11 @@ export class Renderer {
     const bobAmp = this.mode === 'fight' ? 0.09 : 0.03;
     for (const c of this.crowd) {
       c.mesh.position.y = c.baseY + Math.abs(Math.sin(this.animTime * 2.6 + c.phase)) * bobAmp;
+    }
+
+    // rooftop beacons blink out of step with each other
+    for (const bc of this.beacons) {
+      bc.mat.emissiveIntensity = 0.25 + Math.abs(Math.sin(this.animTime * 1.8 + bc.phase)) * 1.6;
     }
 
     if (this.mode === 'title') {
