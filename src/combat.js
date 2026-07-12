@@ -212,6 +212,50 @@ export class Fight {
   }
 }
 
+// one-time badges, checked against the fight after every result
+export const ACHIEVEMENTS = [
+  {
+    id: 'first-win', name: 'Still Standing',
+    desc: 'win a fight',
+    test: (r) => r.winner === 'you',
+  },
+  {
+    id: 'not-a-scratch', name: 'Not a Scratch',
+    desc: 'win while losing under a tenth of your hull',
+    test: (r, f) => r.winner === 'you' && r.dmgTaken <= f.you.maxHp * 0.1,
+  },
+  {
+    id: 'quick-work', name: 'Quick Work',
+    desc: 'win a fight inside 12 seconds',
+    test: (r) => r.winner === 'you' && r.time <= 12,
+  },
+  {
+    id: 'photo-finish', name: 'Photo Finish',
+    desc: 'win with under a tenth of your hull left',
+    test: (r) => r.winner === 'you' && r.hpFrac > 0 && r.hpFrac <= 0.1,
+  },
+  {
+    id: 'punching-up', name: 'Punching Up',
+    desc: 'beat Goliath with a robot under 130 kg',
+    test: (r, f) => r.winner === 'you' && r.opp === 'goliath' && f.you.stats.mass <= 130,
+  },
+  {
+    id: 'glass-cannon', name: 'Glass Cannon',
+    desc: 'win with no armor fitted',
+    test: (r, f) => r.winner === 'you' && !f.design.armor,
+  },
+  {
+    id: 'absolute-unit', name: 'Absolute Unit',
+    desc: 'win with a robot over 300 kg',
+    test: (r, f) => r.winner === 'you' && f.you.stats.mass >= 300,
+  },
+  {
+    id: 'beaten-by-rusty', name: 'Beaten by a Rustbucket',
+    desc: 'lose to the easiest robot in the yard',
+    test: (r) => r.winner === 'foe' && r.opp === 'rustbucket',
+  },
+];
+
 export function scoreFight(oppId, result) {
   const opp = OPPONENTS[oppId];
   let score = 0;

@@ -1,5 +1,5 @@
 import { PARTS, CATEGORY_ORDER } from './parts.js';
-import { computeStats, validateDesign, OPPONENTS } from './combat.js';
+import { computeStats, validateDesign, OPPONENTS, ACHIEVEMENTS } from './combat.js';
 import { audio } from './audio.js';
 
 const $ = (id) => document.getElementById(id);
@@ -18,6 +18,7 @@ export function loadSave() {
     unlocked: save.unlocked ?? [],
     best: save.best ?? { rustbucket: 0, mangler: 0, goliath: 0 },
     wins: save.wins ?? 0,
+    achievements: save.achievements ?? [],
   };
 }
 
@@ -218,8 +219,16 @@ function drawFightGraph(result) {
   g.fillText('them', L + 32, 11);
 }
 
-export function renderResults(oppId, result, score, save, isBest) {
+export function renderResults(oppId, result, score, save, isBest, newAchievements) {
   drawFightGraph(result);
+  const achBox = $('res-achievements');
+  achBox.innerHTML = '';
+  for (const a of newAchievements || []) {
+    const el = document.createElement('div');
+    el.className = 'ach-stamp';
+    el.innerHTML = '<span>' + a.name + '</span><span class="part-sub">' + a.desc + '</span>';
+    achBox.appendChild(el);
+  }
   $('results-heading').textContent =
     result.winner === 'you' ? 'Victory' : result.winner === 'draw' ? 'Draw' : 'Wrecked';
   $('res-opp').textContent = OPPONENTS[oppId].name;
@@ -260,6 +269,18 @@ export function renderUnlocks(save, onBuy) {
       row.appendChild(btn);
     }
     list.appendChild(row);
+  }
+
+  const achList = $('achievement-list');
+  achList.innerHTML = '';
+  for (const a of ACHIEVEMENTS) {
+    const earned = save.achievements.includes(a.id);
+    const row = document.createElement('div');
+    row.className = 'ach-row' + (earned ? ' earned' : '');
+    row.innerHTML =
+      '<div><div>' + a.name + '</div><span class="part-sub">' + a.desc + '</span></div>' +
+      '<span class="ach-state">' + (earned ? 'Earned' : 'Locked') + '</span>';
+    achList.appendChild(row);
   }
 }
 

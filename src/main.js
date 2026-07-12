@@ -1,6 +1,6 @@
 import { Renderer } from './render.js';
 import { PARTS } from './parts.js';
-import { Fight, scoreFight, validateDesign, OPPONENTS } from './combat.js';
+import { Fight, scoreFight, validateDesign, OPPONENTS, ACHIEVEMENTS } from './combat.js';
 import { audio } from './audio.js';
 import * as ui from './ui.js';
 
@@ -11,6 +11,8 @@ let opponent = 'rustbucket';
 let state = 'title'; // title | build | fight | results | unlocks
 let fight = null;
 let unlocksReturnTo = 'title';
+// per-fight callout flags so each line only fires once
+let callouts = {};
 
 // current robot design. the stack is an ordered bottom-up list:
 // one drive part, then hull sections
@@ -109,6 +111,7 @@ function goBuild() {
 function goFight() {
   if (state === 'fight' || validateDesign(design)) return;
   state = 'fight';
+  callouts = {};
   fight = new Fight(design, opponent);
   renderer.buildRobot(design, 'you');
   renderer.buildRobot(OPPONENTS[opponent].design, 'foe');
@@ -129,9 +132,18 @@ function goResults() {
   if (isBest) save.best[opponent] = score;
   if (result.winner === 'you') save.wins += 1;
   save.points += score;
+
+  // hand out any badges this fight earned
+  const newAchievements = [];
+  for (const a of ACHIEVEMENTS) {
+    if (!save.achievements.includes(a.id) && a.test(result, fight)) {
+      save.achievements.push(a.id);
+      newAchievements.push(a);
+    }
+  }
   ui.storeSave(save);
 
-  ui.renderResults(opponent, result, score, save, isBest);
+  ui.renderResults(opponent, result, score, save, isBest, newAchievements);
   ui.showScreen('results-screen');
 }
 
@@ -217,6 +229,20 @@ function frame(now) {
       fight.step(dt);
       handleFightEvents();
       ui.updateBattleReadout(fight);
+      // ringside callouts as the fight turns
+      const [youFrac, foeFrac] = fight.hullFracs();
+      if (!callouts.blood && fight.firstBlood) {
+        callouts.blood = true;
+        ui.flashEvent('First blood');
+      }
+      if (!callouts.foeHalf && foeFrac > 0 && foeFrac <= 0.5) {
+        callouts.foeHalf = true;
+        ui.flashEvent(OPPONENTS[opponent].name + ' at half hull');
+      }
+      if (!callouts.youHalf && youFrac > 0 && youFrac <= 0.5) {
+        callouts.youHalf = true;
+        ui.flashEvent('Your hull at half');
+      }
       const busy = fight.you.moving || fight.foe.moving;
       audio.setMotorLevel(busy ? 0.7 : 0.4);
       if (fight.done) {
