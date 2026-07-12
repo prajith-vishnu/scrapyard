@@ -51,6 +51,7 @@ export class Renderer {
     this.titleAngle = 0;
     this.animTime = 0;
     this.flashT = 0;
+    this.shake = 0;
     this.camTarget = new THREE.Vector3(0, 2, 0);
 
     // the crowd on the bleachers, bobbing on their own clocks
@@ -1090,6 +1091,7 @@ export class Renderer {
       );
     }
     this.flashT = 1;
+    this.shake = Math.min(1, this.shake + dmg / 80);
     this.arcLight.position.set(p.x, 2.2, p.z);
     // heavy hits knock a chunk or two loose
     if (dmg >= 25) {
@@ -1122,6 +1124,7 @@ export class Renderer {
     // the loser keels over and burns instead of disappearing
     bot.dead = true;
     bot.tipT = 0;
+    this.shake = 1.4;
   }
 
   updateDebris(dt) {
@@ -1303,13 +1306,26 @@ export class Renderer {
       }
     }
 
-    // camera hangs to the side and pulls in as the robots close
+    // ringside camera: low to the dirt, drifting slowly around the
+    // action, pulling in tight as the robots close
     const mid = (fight.you.pos + fight.foe.pos) / 2;
     const gap = fight.gap();
-    const dist = THREE.MathUtils.clamp(6 + gap * 0.55, 8, 19);
-    const goal = new THREE.Vector3(mid + 2, this.arenaY + 2 + dist * 0.24, dist);
+    const dist = THREE.MathUtils.clamp(5.5 + gap * 0.5, 7, 17);
+    const drift = Math.sin(this.animTime * 0.11) * 0.4;
+    const goal = new THREE.Vector3(
+      mid + drift * dist * 0.5,
+      this.arenaY + 1.6 + dist * 0.17,
+      dist
+    );
     this.camera.position.lerp(goal, 1 - Math.pow(0.001, dt));
-    this.camTarget.lerp(new THREE.Vector3(mid, this.arenaY + 1.1, 0), 1 - Math.pow(0.0005, dt));
+    this.camTarget.lerp(new THREE.Vector3(mid, this.arenaY + 1.0, 0), 1 - Math.pow(0.0005, dt));
+    // impacts rattle the camera, big ones rattle it hard
+    this.shake = Math.max(0, this.shake - dt * 2.4);
+    if (this.shake > 0) {
+      const s = this.shake * this.shake * 0.24;
+      this.camera.position.x += (Math.random() - 0.5) * s;
+      this.camera.position.y += (Math.random() - 0.5) * s;
+    }
     this.camera.lookAt(this.camTarget);
   }
 
