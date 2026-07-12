@@ -115,7 +115,17 @@ export function renderStats(design) {
 
   const warning = validateDesign(design);
   const warnEl = $('build-warning');
-  warnEl.textContent = warning || '';
+  if (warning) {
+    warnEl.textContent = warning;
+    warnEl.classList.remove('advice');
+  } else if (s.speed < 1.3) {
+    // legal but sluggish: warn without blocking the fight
+    warnEl.textContent = 'Heavy for this drive - it will crawl across the arena.';
+    warnEl.classList.add('advice');
+  } else {
+    warnEl.textContent = '';
+    warnEl.classList.remove('advice');
+  }
   $('btn-fight').disabled = !!warning;
 }
 

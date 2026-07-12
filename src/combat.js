@@ -146,10 +146,13 @@ export class Fight {
 
     // every weapon in range swings on its own clock. the clock only
     // runs while the target is close, so there is a beat between
-    // contact and the first hit
+    // contact and the first hit. range is checked against the same
+    // snapshot for both robots, otherwise whoever swings first this
+    // tick can shove the other out of range before it answers back
+    const gapNow = this.gap();
     for (const [me, other, tag] of [[this.you, this.foe, 'you'], [this.foe, this.you, 'foe']]) {
       for (const w of me.weapons) {
-        if (this.gap() > w.range) continue;
+        if (gapNow > w.range) continue;
         w.timer -= dt;
         if (w.timer <= 0) {
           w.timer = 1 / w.rate;

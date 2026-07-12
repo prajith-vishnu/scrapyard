@@ -301,6 +301,7 @@ td:last-child.stat-bad { color: var(--red); }
   min-height: 1.2em;
   margin: 10px 0 2px;
 }
+#build-warning.advice { color: #8a6a1d; }
 
 /* opponent picker */
 .opp-btn {

@@ -37,8 +37,8 @@ export const PARTS = {
   },
   'saw': {
     name: 'Rip Saw', category: 'Weapon',
-    mass: 25, damage: 12, rate: 2, range: 2.5, cost: 0,
-    desc: 'dmg 24 per s / short reach',
+    mass: 25, damage: 13, rate: 2, range: 2.5, cost: 0,
+    desc: 'dmg 26 per s / short reach',
   },
   'hammer': {
     name: 'Drop Hammer', category: 'Weapon',
@@ -47,12 +47,12 @@ export const PARTS = {
   },
   'zapper': {
     name: 'Arc Zapper', category: 'Weapon',
-    mass: 30, damage: 9, rate: 1.4, range: 9, cost: 900,
-    desc: 'dmg 13 per s / reach 9',
+    mass: 30, damage: 12, rate: 1.4, range: 9, cost: 900,
+    desc: 'dmg 17 per s / reach 9',
   },
   'spike-pair': {
     name: 'Side Spikes', category: 'Weapon',
-    mass: 20, damage: 7, rate: 1, range: 2.6, cost: 500,
+    mass: 20, damage: 7, rate: 1, range: 3, cost: 500,
     desc: 'dmg +7 per s up close',
   },
   'plates-scrap': {
