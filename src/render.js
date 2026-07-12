@@ -8,8 +8,8 @@ import { PARTS, createPartMesh, disposeGroup } from './parts.js';
 
 const MAX_PARTICLES = 1400;
 
-// sky dome shader: late afternoon over the desert, warm at the
-// horizon, with the sun hanging low where the shadow light sits
+// sky dome shader: deep twilight, teal at the horizon fading to a
+// near-black zenith, with a cold glow where the light comes from
 const skyVertex = `
   varying vec3 vPos;
   void main() {
@@ -22,12 +22,12 @@ const skyFragment = `
   void main() {
     vec3 dir = normalize(vPos);
     float h = dir.y * 0.5 + 0.5;
-    vec3 horizon = vec3(0.93, 0.71, 0.50);
-    vec3 zenith = vec3(0.23, 0.36, 0.58);
-    vec3 col = mix(horizon, zenith, pow(h, 0.55));
+    vec3 horizon = vec3(0.16, 0.30, 0.38);
+    vec3 zenith = vec3(0.02, 0.04, 0.10);
+    vec3 col = mix(horizon, zenith, pow(h, 0.5));
     vec3 sunDir = normalize(vec3(0.62, 0.34, 0.26));
     float s = max(dot(dir, sunDir), 0.0);
-    col += vec3(1.0, 0.78, 0.5) * (pow(s, 900.0) * 4.0 + pow(s, 18.0) * 0.22);
+    col += vec3(0.5, 0.8, 1.0) * (pow(s, 900.0) * 1.6 + pow(s, 18.0) * 0.10);
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -127,11 +127,11 @@ export class Renderer {
 
   setupLights() {
     // hemisphere fill so shadowed sides are not pure black
-    this.hemi = new THREE.HemisphereLight(0xd8b898, 0x4a3c30, 0.55);
+    this.hemi = new THREE.HemisphereLight(0x2c3c4c, 0x141a20, 0.65);
     this.scene.add(this.hemi);
 
-    // the sun sits low so everything drags a long shadow
-    this.sun = new THREE.DirectionalLight(0xffd0a0, 1.9);
+    // moonlight does the shadow work, still low and long
+    this.sun = new THREE.DirectionalLight(0x9ab8e8, 1.1);
     this.sun.position.set(28, 15, 11);
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(4096, 4096);
@@ -146,8 +146,8 @@ export class Renderer {
     this.scene.add(this.sun);
     this.scene.add(this.sun.target);
 
-    // cool dusk rim light from behind so robot edges catch
-    this.rim = new THREE.DirectionalLight(0x7a9ac8, 0.55);
+    // magenta rim light from behind so robot edges catch neon
+    this.rim = new THREE.DirectionalLight(0xc84a8a, 0.5);
     this.rim.position.set(-10, 8, -14);
     this.scene.add(this.rim);
   }
@@ -274,8 +274,8 @@ export class Renderer {
   }
 
   setupGround() {
-    // warm haze so the terrain fades into the horizon instead of ending
-    this.scene.fog = new THREE.Fog(0xd0ac8a, 380, 3000);
+    // cold night haze so the terrain fades out instead of ending
+    this.scene.fog = new THREE.Fog(0x0c141c, 300, 2600);
 
     const geo = new THREE.PlaneGeometry(4000, 4000, 96, 96);
     geo.rotateX(-Math.PI / 2);
@@ -358,15 +358,15 @@ export class Renderer {
     wear.addColorStop(1, 'rgba(150,138,110,0)');
     g.fillStyle = wear;
     g.fillRect(0, 0, 512, 512);
-    // the ring line, painted once years ago and scuffed ever since
-    g.strokeStyle = 'rgba(228,214,178,0.55)';
+    // the ring line, repainted in whatever glows
+    g.strokeStyle = 'rgba(120,220,235,0.6)';
     g.lineWidth = 9;
     g.setLineDash([26, 15]);
     g.beginPath();
     g.arc(256, 256, 196, 0, Math.PI * 2);
     g.stroke();
     g.setLineDash([]);
-    g.fillStyle = 'rgba(228,214,178,0.4)';
+    g.fillStyle = 'rgba(120,220,235,0.45)';
     g.beginPath();
     g.arc(256, 256, 10, 0, Math.PI * 2);
     g.fill();
@@ -388,14 +388,14 @@ export class Renderer {
       g.fillRect(x + 4, 0, 3, 128);
     }
     if (hazard) {
-      // chevron band painted across the middle of the panel
+      // lit chevron band across the middle of the panel
       g.save();
       g.beginPath();
       g.rect(0, 44, 256, 36);
       g.clip();
       for (let x = -40; x < 300; x += 22) {
-        g.fillStyle = x % 44 === 4 ? '#c9a227' : '#1d1e22';
-        g.globalAlpha = 0.85;
+        g.fillStyle = x % 44 === 4 ? '#3fd8e8' : '#10181d';
+        g.globalAlpha = 0.9;
         g.beginPath();
         g.moveTo(x, 80); g.lineTo(x + 11, 44); g.lineTo(x + 22, 44); g.lineTo(x + 11, 80);
         g.fill();
@@ -430,10 +430,10 @@ export class Renderer {
     const g = c.getContext('2d');
     g.fillStyle = '#1b1d21';
     g.fillRect(0, 0, 1024, 128);
-    g.strokeStyle = '#f0b429';
+    g.strokeStyle = '#3fd8e8';
     g.lineWidth = 6;
     g.strokeRect(8, 8, 1008, 112);
-    g.fillStyle = '#f0b429';
+    g.fillStyle = '#3fd8e8';
     g.font = '900 78px "Arial Black", Impact, sans-serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
@@ -471,7 +471,12 @@ export class Renderer {
     // ends where the robots roll in
     const darkSteelWall = new THREE.MeshStandardMaterial({ color: 0x33363b, metalness: 0.7, roughness: 0.5 });
     const corrMat = new THREE.MeshStandardMaterial({ map: this.makeCorrugatedTexture(false), metalness: 0.4, roughness: 0.75 });
-    const hazMat = new THREE.MeshStandardMaterial({ map: this.makeCorrugatedTexture(true), metalness: 0.4, roughness: 0.75 });
+    // the striped panels run their own lighting
+    const hazTex = this.makeCorrugatedTexture(true);
+    const hazMat = new THREE.MeshStandardMaterial({
+      map: hazTex, emissiveMap: hazTex, emissive: 0x8adfff, emissiveIntensity: 0.5,
+      metalness: 0.4, roughness: 0.75,
+    });
     const SEG = 26;
     for (let i = 0; i < SEG; i++) {
       const a = (i / SEG) * Math.PI * 2;
@@ -534,10 +539,14 @@ export class Renderer {
       arena.add(bank);
     }
 
-    // the yard banner over the far bank
+    // the yard sign over the far bank, wired up and buzzing
+    const bannerTex = this.makeBannerTexture();
     const banner = new THREE.Mesh(
       new THREE.PlaneGeometry(13, 1.7),
-      new THREE.MeshStandardMaterial({ map: this.makeBannerTexture(), transparent: true, roughness: 0.85, side: THREE.DoubleSide })
+      new THREE.MeshStandardMaterial({
+        map: bannerTex, emissiveMap: bannerTex, emissive: 0xffffff, emissiveIntensity: 0.7,
+        transparent: true, roughness: 0.85, side: THREE.DoubleSide,
+      })
     );
     banner.position.set(0, 3.4, -19.6);
     banner.rotation.z = 0.012;
@@ -550,8 +559,8 @@ export class Renderer {
     triShape.lineTo(0, -0.62);
     triShape.lineTo(-0.28, 0);
     const triGeo = new THREE.ShapeGeometry(triShape);
-    const flagMats = [0xf0b429, 0xe0503a, 0xece7da].map(
-      (col) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.85, side: THREE.DoubleSide })
+    const flagMats = [0x3fd8e8, 0xff4a6a, 0xd8f0f2].map(
+      (col) => new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.25, roughness: 0.85, side: THREE.DoubleSide })
     );
     const wireMat = new THREE.LineBasicMaterial({ color: 0x8a8b8e, transparent: true, opacity: 0.6 });
     for (const zs of [14.8, -14.8]) {
@@ -572,9 +581,9 @@ export class Renderer {
 
     // floodlight towers looking down into the pit
     const darkSteel = new THREE.MeshStandardMaterial({ color: 0x3a3d42, metalness: 0.7, roughness: 0.5 });
-    // the floodlights are already on this late in the day
+    // cold arc floodlights, the only honest light out here
     const lampMat = new THREE.MeshStandardMaterial({
-      color: 0xfff7d0, emissive: 0xfff2b8, emissiveIntensity: 1.6,
+      color: 0xd8f4ff, emissive: 0xaef4ff, emissiveIntensity: 2.4,
     });
     for (let i = 0; i < 4; i++) {
       const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
@@ -587,10 +596,17 @@ export class Renderer {
       arena.add(pole, head);
     }
 
-    // warm flicker over the pit when metal meets metal
-    this.arcLight = new THREE.PointLight(0xffd9a0, 0, 34, 2);
+    // electric flicker over the pit when metal meets metal
+    this.arcLight = new THREE.PointLight(0x9fe8ff, 0, 34, 2);
     this.arcLight.position.set(0, 2.5, 0);
     arena.add(this.arcLight);
+
+    // neon wash over the pit, cyan one side, magenta the other
+    const neonA = new THREE.PointLight(0x35d8e8, 14, 50, 2);
+    neonA.position.set(-9, 7, 5);
+    const neonB = new THREE.PointLight(0xd84aff, 10, 50, 2);
+    neonB.position.set(9, 7, -5);
+    arena.add(neonA, neonB);
 
     this.scene.add(arena);
     this.scene.add(this.bots.you.group);
@@ -849,15 +865,28 @@ export class Renderer {
     mg.beginPath(); mg.arc(48, 52, 14, 0, Math.PI * 2); mg.fill();
     mg.beginPath(); mg.arc(78, 74, 10, 0, Math.PI * 2); mg.fill();
     mg.beginPath(); mg.arc(66, 38, 7, 0, Math.PI * 2); mg.fill();
+    const moonTex = new THREE.CanvasTexture(mc);
     this.moon = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: new THREE.CanvasTexture(mc),
+      map: moonTex,
       transparent: true,
       depthWrite: false,
       fog: false,
-      opacity: 0.5,
+      opacity: 0.85,
     }));
-    this.moon.scale.set(110, 110, 1);
+    this.moon.scale.set(150, 150, 1);
     this.scene.add(this.moon);
+
+    // a second, smaller moon. nobody said this was earth
+    this.moon2 = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: moonTex,
+      transparent: true,
+      depthWrite: false,
+      fog: false,
+      color: 0xffc9a0,
+      opacity: 0.6,
+    }));
+    this.moon2.scale.set(46, 46, 1);
+    this.scene.add(this.moon2);
   }
 
   setupParticles() {
@@ -957,15 +986,15 @@ export class Renderer {
         this.pSize[i] = this.pBaseSize[i] * (0.5 + f * 0.5);
         this.pAlpha[i] = f;
       } else {
-        // sparks: white-hot to orange to a dim red tail, falling
+        // sparks: white-hot to electric blue to a dim tail, falling
         this.pVel[i * 3 + 1] -= 9 * dt;
         if (t < 0.2) {
-          this.pColor[i * 3] = 1.0; this.pColor[i * 3 + 1] = 0.95; this.pColor[i * 3 + 2] = 0.8;
+          this.pColor[i * 3] = 0.88; this.pColor[i * 3 + 1] = 0.97; this.pColor[i * 3 + 2] = 1.0;
         } else if (t < 0.6) {
-          this.pColor[i * 3] = 1.0; this.pColor[i * 3 + 1] = 0.45; this.pColor[i * 3 + 2] = 0.1;
+          this.pColor[i * 3] = 0.3; this.pColor[i * 3 + 1] = 0.75; this.pColor[i * 3 + 2] = 1.0;
         } else {
           const f = 1 - t;
-          this.pColor[i * 3] = 0.6 * f; this.pColor[i * 3 + 1] = 0.22 * f; this.pColor[i * 3 + 2] = 0.1 * f;
+          this.pColor[i * 3] = 0.1 * f; this.pColor[i * 3 + 1] = 0.3 * f; this.pColor[i * 3 + 2] = 0.65 * f;
         }
         this.pSize[i] = this.pBaseSize[i] * (1 - t * 0.55);
         this.pAlpha[i] = 1 - t * t;
@@ -1240,6 +1269,11 @@ export class Renderer {
       this.camera.position.x - 620,
       this.camera.position.y + 780,
       this.camera.position.z - 980
+    );
+    this.moon2.position.set(
+      this.camera.position.x + 540,
+      this.camera.position.y + 620,
+      this.camera.position.z - 1050
     );
 
     this.composer.render();
