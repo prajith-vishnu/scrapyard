@@ -172,7 +172,7 @@ export function flashEvent(text) {
 
 // ---- results ----
 
-// hull-over-time plot for both robots. red ink is you, gray is them,
+// hull-over-time plot for both robots. yellow is you, gray is them,
 // a dot marks the moment the loser went down
 function drawFightGraph(result) {
   const canvas = $('res-graph');
@@ -193,18 +193,18 @@ function drawFightGraph(result) {
   const X = (t) => L + (t / tMax) * (W - L - R);
   const Y = (f) => T + (1 - f) * (H - T - B);
 
-  // faint gridlines, printed-chart style
-  g.strokeStyle = 'rgba(26,27,29,0.14)';
+  // faint gridlines scratched into the plate
+  g.strokeStyle = 'rgba(236,231,218,0.13)';
   g.lineWidth = 1;
   for (let i = 1; i <= 3; i++) {
     const y = T + ((H - T - B) / 4) * i;
     g.beginPath(); g.moveTo(L, y); g.lineTo(W - R, y); g.stroke();
   }
   // the floor
-  g.strokeStyle = 'rgba(26,27,29,0.5)';
+  g.strokeStyle = 'rgba(236,231,218,0.45)';
   g.beginPath(); g.moveTo(L, Y(0)); g.lineTo(W - R, Y(0)); g.stroke();
 
-  for (const [idx, color] of [[2, '#6f6a5a'], [1, '#d8451f']]) {
+  for (const [idx, color] of [[2, '#8a8577'], [1, '#f0b429']]) {
     g.strokeStyle = color;
     g.lineWidth = 2;
     g.beginPath();
@@ -216,16 +216,16 @@ function drawFightGraph(result) {
   if (result.winner !== 'draw' && !result.decision) {
     const last = track[track.length - 1];
     const idx = result.winner === 'you' ? 2 : 1;
-    g.fillStyle = '#1a1b1d';
+    g.fillStyle = '#e0503a';
     g.beginPath();
     g.arc(X(last[0]), Y(Math.max(0, last[idx])), 3.5, 0, Math.PI * 2);
     g.fill();
   }
 
   g.font = '10px ui-monospace, Menlo, Consolas, monospace';
-  g.fillStyle = '#d8451f';
+  g.fillStyle = '#f0b429';
   g.fillText('you', L + 2, 11);
-  g.fillStyle = '#6f6a5a';
+  g.fillStyle = '#8a8577';
   g.fillText('them', L + 32, 11);
 }
 

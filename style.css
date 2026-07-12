@@ -1,15 +1,19 @@
-/* the ui is styled like pages cut out of an old workshop service
-   manual: cream paper, hard black borders with a print offset shadow,
-   black section tabs, and red ink for anything important */
+/* the ui is painted like the signage around a scrapyard: dark shop
+   steel, hazard yellow stencils, and hand-cut plates with hard
+   shadows. red is for anything that will get you hurt */
 :root {
-  --paper: #f2eee1;
-  --paper-dim: #e7e2d1;
-  --ink: #1a1b1d;
-  --dim: #6f6a5a;
-  --red: #d8451f;
-  --green: #2e7d4a;
-  --shadow: rgba(15, 15, 18, 0.45);
+  --steel: #24272c;
+  --steel-dim: #1b1d21;
+  --edge: #101114;
+  --line: #474d57;
+  --text: #ece7da;
+  --dim: #98917f;
+  --yellow: #f0b429;
+  --red: #e0503a;
+  --green: #8db56b;
+  --shadow: rgba(0, 0, 0, 0.55);
   --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-stencil: 'Arial Black', 'Arial Bold', Impact, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
@@ -20,7 +24,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #0a0c10;
-  color: var(--ink);
+  color: var(--text);
   font-family: var(--font-body);
 }
 
@@ -34,42 +38,45 @@ html, body {
 .screen > * { pointer-events: auto; }
 .hidden { display: none !important; }
 
-/* paper panels with a solid offset shadow, like a sticker on a page */
+/* steel plates with a solid drop shadow, like they were cut with a
+   torch and bolted up slightly crooked */
 .panel, .title-block {
   position: relative;
-  background: var(--paper);
-  border: 2px solid var(--ink);
+  background: var(--steel);
+  border: 2px solid var(--edge);
   box-shadow: 5px 5px 0 var(--shadow);
   padding: 16px;
 }
 
 /* type */
 h1 {
-  font-weight: 800;
-  font-size: 2.7rem;
-  line-height: 0.95;
+  font-family: var(--font-stencil);
+  font-weight: 900;
+  font-size: 2.6rem;
+  line-height: 0.98;
   text-transform: uppercase;
-  letter-spacing: 0.01em;
-  color: var(--ink);
+  letter-spacing: 0.02em;
+  color: var(--yellow);
+  text-shadow: 3px 3px 0 var(--edge);
 }
 h1::after {
   content: '';
   display: block;
-  width: 74px;
-  height: 7px;
-  background: var(--red);
+  width: 110px;
+  height: 9px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 8px, var(--edge) 8px 16px);
   margin-top: 13px;
 }
 
-/* section headers as black tabs */
+/* section headers as yellow tape labels */
 h2 {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--yellow);
+  color: #16171a;
   font-family: var(--font-mono);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 0.66rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
@@ -80,7 +87,7 @@ h2::before {
   content: '';
   width: 7px;
   height: 7px;
-  background: var(--red);
+  background: #16171a;
   flex-shrink: 0;
 }
 h2.spaced { margin-top: 16px; }
@@ -90,10 +97,10 @@ h2.spaced { margin-top: 16px; }
   font-size: 0.66rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--yellow);
   margin-bottom: 13px;
 }
-.kicker::before { content: 'doc 01 // '; color: var(--dim); }
+.kicker::before { content: 'lot 47 // '; color: var(--dim); }
 
 .tagline {
   color: var(--dim);
@@ -107,62 +114,58 @@ h2.spaced { margin-top: 16px; }
   color: var(--dim);
 }
 
-/* a little barcode in the corner of cover pages, because print */
+/* a strip of hazard tape peeling off the corner of the big plates */
 .title-block::after {
   content: '';
   position: absolute;
-  right: 14px;
-  bottom: 12px;
-  width: 74px;
-  height: 15px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--ink) 0 2px, transparent 2px 5px,
-    var(--ink) 5px 6px, transparent 6px 10px,
-    var(--ink) 10px 13px, transparent 13px 16px
-  );
-  opacity: 0.85;
+  right: -6px;
+  bottom: 14px;
+  width: 84px;
+  height: 12px;
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 7px, var(--edge) 7px 14px);
+  transform: rotate(-2deg);
+  opacity: 0.9;
 }
 
-/* buttons: stamped ink boxes that fill on hover */
+/* buttons: steel slugs that light up yellow when touched */
 .btn {
   appearance: none;
   display: block;
   width: 100%;
   margin-top: 10px;
   padding: 10px 16px;
-  background: var(--paper);
-  border: 2px solid var(--ink);
-  color: var(--ink);
+  background: var(--steel);
+  border: 2px solid var(--line);
+  color: var(--text);
   font-family: var(--font-mono);
   font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   cursor: pointer;
   box-shadow: 3px 3px 0 var(--shadow);
-  transition: background 0.1s, color 0.1s;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
 }
-.btn:hover { background: var(--ink); color: var(--paper); }
+.btn:hover { background: var(--yellow); border-color: var(--yellow); color: #16171a; }
 .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
 .btn:disabled {
-  background: var(--paper-dim);
+  background: var(--steel-dim);
   color: var(--dim);
-  border-color: var(--dim);
+  border-color: var(--steel);
   cursor: default;
   box-shadow: none;
 }
-.btn:disabled:hover { background: var(--paper-dim); color: var(--dim); }
+.btn:disabled:hover { background: var(--steel-dim); color: var(--dim); }
 
 .btn-big {
-  background: var(--red);
-  border-color: var(--ink);
-  color: var(--paper);
+  background: var(--yellow);
+  border-color: var(--edge);
+  color: #16171a;
   font-weight: 700;
   padding: 13px 16px;
 }
-.btn-big:hover { background: var(--ink); color: var(--paper); }
+.btn-big:hover { background: var(--text); border-color: var(--edge); color: #16171a; }
 
-/* the fight button gets caution stripes, printed in ink and red */
+/* the fight button gets its own hazard stripes */
 #btn-fight {
   position: relative;
   margin: 16px 0 10px;
@@ -173,7 +176,7 @@ h2.spaced { margin-top: 16px; }
   left: -2px;
   right: -2px;
   height: 6px;
-  background: repeating-linear-gradient(-45deg, var(--ink) 0 7px, var(--red) 7px 14px);
+  background: repeating-linear-gradient(-45deg, var(--edge) 0 7px, var(--yellow) 7px 14px);
 }
 #btn-fight::before { top: -9px; }
 #btn-fight::after { bottom: -9px; }
@@ -229,28 +232,28 @@ h2.spaced { margin-top: 16px; }
 .part-category {
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  color: var(--dim);
+  color: var(--yellow);
   text-transform: uppercase;
   letter-spacing: 0.18em;
   margin: 16px 0 6px;
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 2px solid var(--line);
   padding-bottom: 3px;
 }
 .part-btn {
   display: block;
   width: 100%;
   text-align: left;
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  border-left: 4px solid var(--ink);
-  color: var(--ink);
+  background: var(--steel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
+  color: var(--text);
   padding: 8px 10px;
   margin-bottom: 6px;
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 0.85rem;
 }
-.part-btn:hover { border-color: var(--red); border-left-color: var(--red); }
+.part-btn:hover { border-color: var(--yellow); border-left-color: var(--yellow); }
 .part-btn .part-sub {
   display: block;
   font-family: var(--font-mono);
@@ -259,24 +262,24 @@ h2.spaced { margin-top: 16px; }
   margin-top: 3px;
 }
 .part-btn.active {
-  border-left-color: var(--red);
-  background: #fbe9de;
+  border-left-color: var(--yellow);
+  background: #2f3238;
 }
 .part-btn.locked {
   border-style: dashed;
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: default;
-  background: var(--paper-dim);
+  background: var(--steel-dim);
 }
-.part-btn.locked .part-sub { color: var(--red); }
-.part-btn.locked:hover { border-color: var(--ink); }
+.part-btn.locked .part-sub { color: var(--yellow); }
+.part-btn.locked:hover { border-color: var(--line); }
 
 /* stats table */
 table { width: 100%; border-collapse: collapse; }
 td {
   padding: 4px 0;
   font-size: 0.85rem;
-  border-bottom: 1px dotted rgba(26, 27, 29, 0.35);
+  border-bottom: 1px dotted rgba(236, 231, 218, 0.25);
 }
 td:first-child {
   color: var(--dim);
@@ -289,7 +292,7 @@ td:last-child {
   text-align: right;
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--ink);
+  color: var(--text);
 }
 td:last-child.stat-good { color: var(--green); }
 td:last-child.stat-bad { color: var(--red); }
@@ -301,27 +304,27 @@ td:last-child.stat-bad { color: var(--red); }
   min-height: 1.2em;
   margin: 10px 0 2px;
 }
-#build-warning.advice { color: #8a6a1d; }
+#build-warning.advice { color: #c9a227; }
 
 /* opponent picker */
 .opp-btn {
   display: block;
   width: 100%;
   text-align: left;
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  border-left: 4px solid var(--ink);
-  color: var(--ink);
+  background: var(--steel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
+  color: var(--text);
   padding: 7px 10px;
   margin-bottom: 5px;
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 0.82rem;
 }
-.opp-btn:hover { border-color: var(--red); border-left-color: var(--red); }
+.opp-btn:hover { border-color: var(--yellow); border-left-color: var(--yellow); }
 .opp-btn.active {
-  border-left-color: var(--red);
-  background: #fbe9de;
+  border-left-color: var(--yellow);
+  background: #2f3238;
 }
 .opp-btn .part-sub {
   display: block;
@@ -335,9 +338,9 @@ td:last-child.stat-bad { color: var(--red); }
   display: block;
   width: 100%;
   text-align: left;
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  color: var(--ink);
+  background: var(--steel);
+  border: 1px solid var(--line);
+  color: var(--text);
   padding: 6px 10px;
   margin-bottom: 4px;
   cursor: pointer;
@@ -369,47 +372,47 @@ td:last-child.stat-bad { color: var(--red); }
   margin-top: 10px;
 }
 .hp-row:first-child { margin-top: 0; }
-.hp-row span:last-child { color: var(--ink); font-weight: 700; }
+.hp-row span:last-child { color: var(--text); font-weight: 700; }
 .hp-row.time-row { margin-top: 12px; }
+.keyhint { margin: 12px 0 0; }
 .hp-bar {
   position: relative;
   height: 12px;
-  background: var(--paper-dim);
-  border: 2px solid var(--ink);
+  background: var(--steel-dim);
+  border: 2px solid var(--edge);
   margin-top: 4px;
 }
 .hp-fill {
   height: 100%;
-  background: var(--red);
+  background: var(--yellow);
   transition: width 0.2s linear;
 }
-.hp-fill.foe { background: var(--dim); }
-.keyhint { margin: 12px 0 0; }
+.hp-fill.foe { background: #776f5e; }
 /* segment ticks over the fill */
 .hp-bar::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(90deg, transparent 0 10px, var(--paper) 10px 12px);
+  background: repeating-linear-gradient(90deg, transparent 0 10px, var(--steel) 10px 12px);
   pointer-events: none;
 }
 
-/* fight events look like a rubber stamp slapped on the screen */
+/* fight events look like a stencil sprayed on the screen */
 #fight-event {
   position: absolute;
   top: 15%;
   left: 50%;
   width: auto;
   transform: translateX(-50%) rotate(-1.5deg);
-  background: var(--paper);
-  border: 2px solid var(--ink);
+  background: var(--steel);
+  border: 2px solid var(--yellow);
   box-shadow: 4px 4px 0 var(--shadow);
   padding: 8px 18px;
   font-family: var(--font-mono);
   font-size: 1rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--yellow);
   opacity: 0;
   transition: opacity 0.25s;
 }
@@ -421,10 +424,10 @@ td:last-child.stat-bad { color: var(--red); }
   position: absolute;
   top: 50%;
   left: 8%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) rotate(-0.6deg);
   max-width: 400px;
   padding: 30px 32px 36px;
-  border-top: 10px solid var(--red);
+  border-top: 10px solid var(--yellow);
 }
 .title-block.wide { max-width: 570px; }
 
@@ -434,18 +437,18 @@ td:last-child.stat-bad { color: var(--red); }
   width: 100%;
   height: auto;
   margin: 14px 0 4px;
-  border: 2px solid var(--ink);
-  background: var(--paper-dim);
+  border: 2px solid var(--edge);
+  background: var(--steel-dim);
 }
 .results-table { margin: 12px 0; }
 .results-table td { padding: 6px 0; font-size: 0.9rem; }
 .results-score td {
-  border-top: 2px solid var(--ink);
+  border-top: 2px solid var(--line);
   border-bottom: none;
   padding-top: 12px;
   font-size: 1.15rem;
 }
-.results-score td:last-child { color: var(--red); }
+.results-score td:last-child { color: var(--yellow); }
 #res-best, #res-points {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -456,7 +459,7 @@ td:last-child.stat-bad { color: var(--red); }
 /* unlocks */
 #unlock-points {
   font-family: var(--font-mono);
-  color: var(--red);
+  color: var(--yellow);
   margin: 8px 0 16px;
 }
 #unlock-list {
@@ -467,9 +470,9 @@ td:last-child.stat-bad { color: var(--red); }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--paper);
-  border: 1px solid var(--ink);
-  border-left: 4px solid var(--ink);
+  background: var(--steel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
   padding: 10px 12px;
   margin-bottom: 6px;
   font-size: 0.85rem;
@@ -498,8 +501,8 @@ td:last-child.stat-bad { color: var(--red); }
   bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--paper);
-  border: 1px solid var(--ink);
+  background: var(--steel);
+  border: 1px solid var(--line);
   padding: 4px 12px;
   font-family: var(--font-mono);
   font-size: 0.64rem;
@@ -515,20 +518,20 @@ td:last-child.stat-bad { color: var(--red); }
   left: 50%;
   transform: translate(-50%, -50%);
   max-width: 340px;
-  background: var(--paper);
+  background: var(--steel);
   border: 2px solid var(--red);
   box-shadow: 5px 5px 0 var(--shadow);
   padding: 16px 20px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: var(--ink);
+  color: var(--text);
   z-index: 50;
 }
 
 /* achievement stamps on the results page */
 .ach-stamp {
-  border: 2px solid var(--red);
-  color: var(--red);
+  border: 2px solid var(--yellow);
+  color: var(--yellow);
   padding: 7px 10px;
   margin: 8px 0;
   transform: rotate(-1.2deg);
@@ -551,14 +554,14 @@ td:last-child.stat-bad { color: var(--red); }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid var(--ink);
-  border-left: 4px solid var(--ink);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
   padding: 8px 12px;
   margin-bottom: 6px;
   font-size: 0.85rem;
   opacity: 0.55;
 }
-.ach-row.earned { opacity: 1; border-left-color: var(--red); }
+.ach-row.earned { opacity: 1; border-left-color: var(--yellow); }
 .ach-row .part-sub {
   font-family: var(--font-mono);
   font-size: 0.64rem;
@@ -570,12 +573,12 @@ td:last-child.stat-bad { color: var(--red); }
   text-transform: uppercase;
   color: var(--dim);
 }
-.ach-row.earned .ach-state { color: var(--red); font-weight: 700; }
+.ach-row.earned .ach-state { color: var(--yellow); font-weight: 700; }
 
 /* scrollbars */
 ::-webkit-scrollbar { width: 9px; }
-::-webkit-scrollbar-track { background: var(--paper-dim); }
-::-webkit-scrollbar-thumb { background: var(--ink); }
+::-webkit-scrollbar-track { background: var(--steel-dim); }
+::-webkit-scrollbar-thumb { background: var(--line); }
 
 @media (max-width: 900px) {
   #palette, #stats, #stack-panel { width: 206px; }
