@@ -53,6 +53,9 @@ export class Renderer {
     this.flashT = 0;
     this.camTarget = new THREE.Vector3(0, 2, 0);
 
+    // the crowd on the bleachers, bobbing on their own clocks
+    this.crowd = [];
+
     // loose chunks knocked off by heavy hits
     this.debris = [];
     this.debrisGeo = new THREE.BoxGeometry(0.14, 0.1, 0.12);
@@ -353,6 +356,95 @@ export class Renderer {
     wear.addColorStop(1, 'rgba(150,138,110,0)');
     g.fillStyle = wear;
     g.fillRect(0, 0, 512, 512);
+    // the ring line, painted once years ago and scuffed ever since
+    g.strokeStyle = 'rgba(228,214,178,0.55)';
+    g.lineWidth = 9;
+    g.setLineDash([26, 15]);
+    g.beginPath();
+    g.arc(256, 256, 196, 0, Math.PI * 2);
+    g.stroke();
+    g.setLineDash([]);
+    g.fillStyle = 'rgba(228,214,178,0.4)';
+    g.beginPath();
+    g.arc(256, 256, 10, 0, Math.PI * 2);
+    g.fill();
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+
+  makeCorrugatedTexture(hazard) {
+    const c = document.createElement('canvas');
+    c.width = 256; c.height = 128;
+    const g = c.getContext('2d');
+    g.fillStyle = '#767b80';
+    g.fillRect(0, 0, 256, 128);
+    for (let x = 0; x < 256; x += 8) {
+      g.fillStyle = 'rgba(255,255,255,0.10)';
+      g.fillRect(x, 0, 3, 128);
+      g.fillStyle = 'rgba(10,12,14,0.28)';
+      g.fillRect(x + 4, 0, 3, 128);
+    }
+    if (hazard) {
+      // chevron band painted across the middle of the panel
+      g.save();
+      g.beginPath();
+      g.rect(0, 44, 256, 36);
+      g.clip();
+      for (let x = -40; x < 300; x += 22) {
+        g.fillStyle = x % 44 === 4 ? '#c9a227' : '#1d1e22';
+        g.globalAlpha = 0.85;
+        g.beginPath();
+        g.moveTo(x, 80); g.lineTo(x + 11, 44); g.lineTo(x + 22, 44); g.lineTo(x + 11, 80);
+        g.fill();
+      }
+      g.restore();
+      g.globalAlpha = 1;
+    }
+    for (let i = 0; i < 26; i++) {
+      const x = Math.random() * 256;
+      const y = Math.random() * 128;
+      const r = 4 + Math.random() * 16;
+      const rust = g.createRadialGradient(x, y, 1, x, y, r);
+      rust.addColorStop(0, 'rgba(122,64,34,' + (0.15 + Math.random() * 0.2).toFixed(2) + ')');
+      rust.addColorStop(1, 'rgba(122,64,34,0)');
+      g.fillStyle = rust;
+      g.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    // grime kicked up along the bottom edge
+    const grime = g.createLinearGradient(0, 128, 0, 88);
+    grime.addColorStop(0, 'rgba(30,26,20,0.5)');
+    grime.addColorStop(1, 'rgba(30,26,20,0)');
+    g.fillStyle = grime;
+    g.fillRect(0, 88, 256, 40);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+
+  makeBannerTexture() {
+    const c = document.createElement('canvas');
+    c.width = 1024; c.height = 128;
+    const g = c.getContext('2d');
+    g.fillStyle = '#1b1d21';
+    g.fillRect(0, 0, 1024, 128);
+    g.strokeStyle = '#f0b429';
+    g.lineWidth = 6;
+    g.strokeRect(8, 8, 1008, 112);
+    g.fillStyle = '#f0b429';
+    g.font = '900 78px "Arial Black", Impact, sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText('S C R A P Y A R D', 512, 70);
+    // eat little holes out of the paint so it reads as weathered
+    g.globalCompositeOperation = 'destination-out';
+    for (let i = 0; i < 320; i++) {
+      g.fillStyle = 'rgba(0,0,0,' + (Math.random() * 0.5).toFixed(2) + ')';
+      g.beginPath();
+      g.arc(Math.random() * 1024, Math.random() * 128, Math.random() * 3, 0, Math.PI * 2);
+      g.fill();
+    }
+    g.globalCompositeOperation = 'source-over';
     const tex = new THREE.CanvasTexture(c);
     tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
@@ -373,16 +465,107 @@ export class Renderer {
     arena.add(pad);
     this.arenaY = 0.5;
 
-    // barrier ring with gaps at both ends where the robots roll in
-    for (let i = 0; i < 22; i++) {
-      const a = (i / 22) * Math.PI * 2;
-      if (Math.abs(Math.cos(a)) > 0.92) continue;
-      const barrier = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.8, 0.5), concrete);
-      barrier.position.set(Math.cos(a) * 15.6, 0.4, Math.sin(a) * 15.6);
-      barrier.rotation.y = -a + Math.PI / 2;
+    // corrugated steel wall all the way around the pit, gaps at both
+    // ends where the robots roll in
+    const darkSteelWall = new THREE.MeshStandardMaterial({ color: 0x33363b, metalness: 0.7, roughness: 0.5 });
+    const corrMat = new THREE.MeshStandardMaterial({ map: this.makeCorrugatedTexture(false), metalness: 0.4, roughness: 0.75 });
+    const hazMat = new THREE.MeshStandardMaterial({ map: this.makeCorrugatedTexture(true), metalness: 0.4, roughness: 0.75 });
+    const SEG = 26;
+    for (let i = 0; i < SEG; i++) {
+      const a = (i / SEG) * Math.PI * 2;
+      if (Math.abs(Math.cos(a)) > 0.93) continue;
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(3.85, 2.3, 0.16), i % 6 === 2 ? hazMat : corrMat);
+      wall.position.set(Math.cos(a) * 15.8, 1.15, Math.sin(a) * 15.8);
+      wall.rotation.y = -a + Math.PI / 2;
+      wall.castShadow = true;
+      wall.receiveShadow = true;
+      arena.add(wall);
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.18, 2.7, 0.18), darkSteelWall);
+      const pa = a + Math.PI / SEG;
+      post.position.set(Math.cos(pa) * 15.8, 1.35, Math.sin(pa) * 15.8);
+      post.castShadow = true;
+      arena.add(post);
+    }
+    // concrete chicanes flanking the two gates
+    for (const [bx, bz] of [[17.6, 2.6], [17.6, -2.6], [-17.6, 2.6], [-17.6, -2.6]]) {
+      const barrier = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 2.4), concrete);
+      barrier.position.set(bx, 0.4, bz);
       barrier.castShadow = true;
       barrier.receiveShadow = true;
       arena.add(barrier);
+    }
+
+    // bleachers behind the walls on both long sides, with a crowd
+    const seatMat = new THREE.MeshStandardMaterial({ color: 0x8a6f4a, roughness: 0.9 });
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x3a3d42, metalness: 0.6, roughness: 0.6 });
+    const shirtColors = [0x8a6a4a, 0x5b6a72, 0x9a5a3a, 0x66754f, 0xa8895f, 0x74584e];
+    const headMat = new THREE.MeshStandardMaterial({ color: 0xc09a72, roughness: 0.8 });
+    for (const side of [-1, 1]) {
+      const bank = new THREE.Group();
+      for (let row = 0; row < 4; row++) {
+        const seat = new THREE.Mesh(new THREE.BoxGeometry(17, 0.3, 1.3), seatMat);
+        seat.position.set(0, 0.8 + row * 0.62, row * 1.35);
+        seat.castShadow = true;
+        seat.receiveShadow = true;
+        bank.add(seat);
+        for (const lx of [-8, 0, 8]) {
+          const leg = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.8 + row * 0.62, 0.14), frameMat);
+          leg.position.set(lx, (0.8 + row * 0.62) / 2, row * 1.35);
+          bank.add(leg);
+        }
+      }
+      for (let i = 0; i < 34; i++) {
+        const row = Math.floor(Math.random() * 4);
+        const body = new THREE.Mesh(
+          new THREE.BoxGeometry(0.34, 0.55, 0.26),
+          new THREE.MeshStandardMaterial({ color: shirtColors[i % shirtColors.length], roughness: 0.9 })
+        );
+        body.position.set(-8 + Math.random() * 16, 1.22 + row * 0.62, row * 1.35 - 0.15);
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), headMat);
+        head.position.y = 0.42;
+        body.add(head);
+        bank.add(body);
+        this.crowd.push({ mesh: body, baseY: body.position.y, phase: Math.random() * Math.PI * 2 });
+      }
+      bank.position.set(0, 0, side * 20.5);
+      if (side < 0) bank.rotation.y = Math.PI;
+      arena.add(bank);
+    }
+
+    // the yard banner over the far bank
+    const banner = new THREE.Mesh(
+      new THREE.PlaneGeometry(13, 1.7),
+      new THREE.MeshStandardMaterial({ map: this.makeBannerTexture(), transparent: true, roughness: 0.85, side: THREE.DoubleSide })
+    );
+    banner.position.set(0, 3.4, -19.6);
+    banner.rotation.z = 0.012;
+    arena.add(banner);
+
+    // pennant strings sagging between the floodlight towers
+    const triShape = new THREE.Shape();
+    triShape.moveTo(-0.28, 0);
+    triShape.lineTo(0.28, 0);
+    triShape.lineTo(0, -0.62);
+    triShape.lineTo(-0.28, 0);
+    const triGeo = new THREE.ShapeGeometry(triShape);
+    const flagMats = [0xf0b429, 0xe0503a, 0xece7da].map(
+      (col) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.85, side: THREE.DoubleSide })
+    );
+    const wireMat = new THREE.LineBasicMaterial({ color: 0x8a8b8e, transparent: true, opacity: 0.6 });
+    for (const zs of [14.8, -14.8]) {
+      const wirePts = [];
+      for (let i = 0; i <= 17; i++) {
+        const t = i / 17;
+        const x = -14.8 + t * 29.6;
+        const y = 14.2 - Math.sin(t * Math.PI) * 2.6;
+        wirePts.push(new THREE.Vector3(x, y, zs));
+        if (i < 17) {
+          const flag = new THREE.Mesh(triGeo, flagMats[i % 3]);
+          flag.position.set(x + 0.87, y - Math.sin((t + 0.03) * Math.PI) * 0.1, zs);
+          arena.add(flag);
+        }
+      }
+      arena.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(wirePts), wireMat));
     }
 
     // floodlight towers looking down into the pit
@@ -1014,6 +1197,12 @@ export class Renderer {
     for (const cl of this.clouds) {
       cl.position.x += cl.userData.drift * dt;
       if (cl.position.x > 160) cl.position.x = -160;
+    }
+
+    // the crowd never sits still, and sits even less still mid-fight
+    const bobAmp = this.mode === 'fight' ? 0.09 : 0.03;
+    for (const c of this.crowd) {
+      c.mesh.position.y = c.baseY + Math.abs(Math.sin(this.animTime * 2.6 + c.phase)) * bobAmp;
     }
 
     if (this.mode === 'title') {
