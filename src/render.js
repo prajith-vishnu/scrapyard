@@ -8,8 +8,8 @@ import { PARTS, createPartMesh, disposeGroup } from './parts.js';
 
 const MAX_PARTICLES = 1400;
 
-// sky dome shader: plain desert daytime with a sun matched to the
-// direction of the shadow light
+// sky dome shader: late afternoon over the desert, warm at the
+// horizon, with the sun hanging low where the shadow light sits
 const skyVertex = `
   varying vec3 vPos;
   void main() {
@@ -22,12 +22,12 @@ const skyFragment = `
   void main() {
     vec3 dir = normalize(vPos);
     float h = dir.y * 0.5 + 0.5;
-    vec3 horizon = vec3(0.78, 0.83, 0.88);
-    vec3 zenith = vec3(0.22, 0.44, 0.75);
-    vec3 col = mix(horizon, zenith, pow(h, 0.6));
-    vec3 sunDir = normalize(vec3(0.47, 0.79, 0.31));
+    vec3 horizon = vec3(0.93, 0.71, 0.50);
+    vec3 zenith = vec3(0.23, 0.36, 0.58);
+    vec3 col = mix(horizon, zenith, pow(h, 0.55));
+    vec3 sunDir = normalize(vec3(0.62, 0.34, 0.26));
     float s = max(dot(dir, sunDir), 0.0);
-    col += vec3(1.0, 0.95, 0.8) * (pow(s, 1500.0) * 4.0 + pow(s, 30.0) * 0.12);
+    col += vec3(1.0, 0.78, 0.5) * (pow(s, 900.0) * 4.0 + pow(s, 18.0) * 0.22);
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -126,11 +126,12 @@ export class Renderer {
 
   setupLights() {
     // hemisphere fill so shadowed sides are not pure black
-    this.hemi = new THREE.HemisphereLight(0xbfd4ea, 0x4a4238, 0.5);
+    this.hemi = new THREE.HemisphereLight(0xd8b898, 0x4a3c30, 0.55);
     this.scene.add(this.hemi);
 
-    this.sun = new THREE.DirectionalLight(0xfff2df, 2.0);
-    this.sun.position.set(18, 30, 12);
+    // the sun sits low so everything drags a long shadow
+    this.sun = new THREE.DirectionalLight(0xffd0a0, 1.9);
+    this.sun.position.set(28, 15, 11);
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(4096, 4096);
     // wide enough to catch the buildings around the arena too
@@ -144,8 +145,8 @@ export class Renderer {
     this.scene.add(this.sun);
     this.scene.add(this.sun.target);
 
-    // cool rim light from behind so robot edges catch
-    this.rim = new THREE.DirectionalLight(0x88aaff, 0.6);
+    // cool dusk rim light from behind so robot edges catch
+    this.rim = new THREE.DirectionalLight(0x7a9ac8, 0.55);
     this.rim.position.set(-10, 8, -14);
     this.scene.add(this.rim);
   }
@@ -272,8 +273,8 @@ export class Renderer {
   }
 
   setupGround() {
-    // haze so the terrain fades into the horizon instead of ending
-    this.scene.fog = new THREE.Fog(0xbdd0e2, 400, 3200);
+    // warm haze so the terrain fades into the horizon instead of ending
+    this.scene.fog = new THREE.Fog(0xd0ac8a, 380, 3000);
 
     const geo = new THREE.PlaneGeometry(4000, 4000, 96, 96);
     geo.rotateX(-Math.PI / 2);
@@ -570,8 +571,9 @@ export class Renderer {
 
     // floodlight towers looking down into the pit
     const darkSteel = new THREE.MeshStandardMaterial({ color: 0x3a3d42, metalness: 0.7, roughness: 0.5 });
+    // the floodlights are already on this late in the day
     const lampMat = new THREE.MeshStandardMaterial({
-      color: 0xfff7d0, emissive: 0xfff2b8, emissiveIntensity: 0.8,
+      color: 0xfff7d0, emissive: 0xfff2b8, emissiveIntensity: 1.6,
     });
     for (let i = 0; i < 4; i++) {
       const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
@@ -851,7 +853,7 @@ export class Renderer {
       transparent: true,
       depthWrite: false,
       fog: false,
-      opacity: 0.35,
+      opacity: 0.5,
     }));
     this.moon.scale.set(110, 110, 1);
     this.scene.add(this.moon);
