@@ -161,7 +161,65 @@ export function flashEvent(text) {
 
 // ---- results ----
 
+// hull-over-time plot for both robots. red ink is you, gray is them,
+// a dot marks the moment the loser went down
+function drawFightGraph(result) {
+  const canvas = $('res-graph');
+  if (!canvas) return;
+  const track = result.track;
+  if (!track || track.length < 2) {
+    canvas.classList.add('hidden');
+    return;
+  }
+  canvas.classList.remove('hidden');
+  const g = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  g.clearRect(0, 0, W, H);
+
+  const tMax = Math.max(track[track.length - 1][0], 1);
+  const L = 8, R = 8, T = 16, B = 8;
+  const X = (t) => L + (t / tMax) * (W - L - R);
+  const Y = (f) => T + (1 - f) * (H - T - B);
+
+  // faint gridlines, printed-chart style
+  g.strokeStyle = 'rgba(26,27,29,0.14)';
+  g.lineWidth = 1;
+  for (let i = 1; i <= 3; i++) {
+    const y = T + ((H - T - B) / 4) * i;
+    g.beginPath(); g.moveTo(L, y); g.lineTo(W - R, y); g.stroke();
+  }
+  // the floor
+  g.strokeStyle = 'rgba(26,27,29,0.5)';
+  g.beginPath(); g.moveTo(L, Y(0)); g.lineTo(W - R, Y(0)); g.stroke();
+
+  for (const [idx, color] of [[2, '#6f6a5a'], [1, '#d8451f']]) {
+    g.strokeStyle = color;
+    g.lineWidth = 2;
+    g.beginPath();
+    track.forEach((p, i) => (i ? g.lineTo(X(p[0]), Y(p[idx])) : g.moveTo(X(p[0]), Y(p[idx]))));
+    g.stroke();
+  }
+
+  // dot where the loser went down
+  if (result.winner !== 'draw' && !result.decision) {
+    const last = track[track.length - 1];
+    const idx = result.winner === 'you' ? 2 : 1;
+    g.fillStyle = '#1a1b1d';
+    g.beginPath();
+    g.arc(X(last[0]), Y(Math.max(0, last[idx])), 3.5, 0, Math.PI * 2);
+    g.fill();
+  }
+
+  g.font = '10px ui-monospace, Menlo, Consolas, monospace';
+  g.fillStyle = '#d8451f';
+  g.fillText('you', L + 2, 11);
+  g.fillStyle = '#6f6a5a';
+  g.fillText('them', L + 32, 11);
+}
+
 export function renderResults(oppId, result, score, save, isBest) {
+  drawFightGraph(result);
   $('results-heading').textContent =
     result.winner === 'you' ? 'Victory' : result.winner === 'draw' ? 'Draw' : 'Wrecked';
   $('res-opp').textContent = OPPONENTS[oppId].name;

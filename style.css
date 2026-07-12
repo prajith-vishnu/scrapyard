@@ -427,6 +427,14 @@ td:last-child.stat-bad { color: var(--red); }
 .title-block.wide { max-width: 570px; }
 
 /* results */
+#res-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 14px 0 4px;
+  border: 2px solid var(--ink);
+  background: var(--paper-dim);
+}
 .results-table { margin: 12px 0; }
 .results-table td { padding: 6px 0; font-size: 0.9rem; }
 .results-score td {

@@ -108,6 +108,17 @@ export class Fight {
     this.dmgDealt = 0;
     this.dmgTaken = 0;
     this.firstBlood = null;
+
+    // hull samples over time for the results graph
+    this.track = [[0, 1, 1]];
+    this.lastSample = 0;
+  }
+
+  hullFracs() {
+    return [
+      Math.max(0, this.you.hp) / this.you.maxHp,
+      Math.max(0, this.foe.hp) / this.foe.maxHp,
+    ];
   }
 
   gap() {
@@ -159,6 +170,12 @@ export class Fight {
       }
     }
 
+    if (this.time - this.lastSample >= 0.25 && this.track.length < 400) {
+      this.lastSample = this.time;
+      const [a, b] = this.hullFracs();
+      this.track.push([this.time, a, b]);
+    }
+
     const youDead = this.you.hp <= 0;
     const foeDead = this.foe.hp <= 0;
     if (youDead || foeDead) {
@@ -179,7 +196,10 @@ export class Fight {
 
   finish(winner, decision) {
     this.done = true;
+    const [a, b] = this.hullFracs();
+    this.track.push([this.time, a, b]);
     this.result = {
+      track: this.track,
       winner,
       decision,
       opp: this.oppId,
