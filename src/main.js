@@ -234,14 +234,17 @@ function frame(now) {
       if (!callouts.blood && fight.firstBlood) {
         callouts.blood = true;
         ui.flashEvent('First blood');
+        audio.ping();
       }
       if (!callouts.foeHalf && foeFrac > 0 && foeFrac <= 0.5) {
         callouts.foeHalf = true;
         ui.flashEvent(OPPONENTS[opponent].name + ' at half hull');
+        audio.ping();
       }
       if (!callouts.youHalf && youFrac > 0 && youFrac <= 0.5) {
         callouts.youHalf = true;
         ui.flashEvent('Your hull at half');
+        audio.ping();
       }
       const busy = fight.you.moving || fight.foe.moving;
       audio.setMotorLevel(busy ? 0.7 : 0.4);

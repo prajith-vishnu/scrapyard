@@ -154,6 +154,22 @@ export const audio = {
     }
   },
 
+  // bright little ping for callouts
+  ping() {
+    const c = ensureCtx();
+    const t = c.currentTime;
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(1150, t);
+    o.frequency.exponentialRampToValueAtTime(1500, t + 0.07);
+    g.gain.setValueAtTime(0.06, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+    o.connect(g).connect(master);
+    o.start(t);
+    o.stop(t + 0.18);
+  },
+
   // electric snap for the zapper: falling sawtooth plus a hiss
   zap() {
     const c = ensureCtx();
