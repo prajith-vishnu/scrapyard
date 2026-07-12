@@ -9,7 +9,8 @@ in the browser.
 
 - 3D build mode with orbit camera, junk metal materials, and shadows
 - A desert junkyard to fight in: a dirt pit ringed with concrete
-  barriers, scrap piles, floodlights, and mountains on the horizon
+  barriers, walls of crushed cars, tire stacks, floodlights, a crane
+  frozen mid-drop, and mountains on the horizon
 - Thirteen parts: wheels, treads, hover pads, three hull sizes, a rip
   saw, a drop hammer, an arc zapper, side spikes, two armor sets, and
   a patch kit
@@ -19,8 +20,13 @@ in the browser.
   clocks, so you live with your build choices
 - Real tradeoffs: armor is heavy, heavy is slow, and slow gets zapped
   all the way in
-- Sparks on every hit and a proper explosion when something dies
-- Part unlocks and best scores persist between sessions
+- A 3-2-1 count before the horn (space skips it if you are impatient)
+- Sparks on every hit, chunks knocked loose by heavy swings, and
+  wrecks that tip over and smolder instead of vanishing
+- A hull telemetry graph after every fight, you in red, them in gray
+- Ringside callouts when blood is drawn and hulls hit half
+- Eight achievements, including one for losing to the easiest robot
+- Part unlocks, best scores, and achievements persist between sessions
 - All sound effects generated in the browser with the Web Audio API
 
 ## How to Play
@@ -29,9 +35,10 @@ in the browser.
    the bottom, at least one hull section, and a weapon.
 2. Watch the stats panel: speed has to stay out of the red or you
    will get picked apart on the drive in.
-3. Pick an opponent and hit Fight.
+3. Pick an opponent and hit Fight. Rustbucket first. Trust me.
 4. Spend the points you earn in the Parts Catalog to unlock treads,
-   bigger hulls, the hammer, and the zapper.
+   bigger hulls, the hammer, and the zapper. Goliath is not beatable
+   with starter parts, and only barely with everything else.
 
 Drag to orbit the camera in build mode, scroll to zoom.
 
@@ -52,3 +59,7 @@ python3 -m http.server
 ```
 
 Then open http://localhost:8000 in a browser.
+
+On older machines the game watches its own framerate for the first
+few seconds and automatically turns off bloom and drops shadow
+resolution if it is struggling.
