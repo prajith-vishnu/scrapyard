@@ -520,6 +520,7 @@ td:last-child.stat-bad { color: var(--red); }
   border-top: 10px solid var(--yellow);
 }
 .title-block .btn-row { align-items: stretch; }
+.title-block .btn-row .btn { white-space: nowrap; }
 .title-block .btn-row .btn-big { flex: 1.4; }
 .title-block.center {
   bottom: auto;
