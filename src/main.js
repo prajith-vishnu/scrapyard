@@ -13,6 +13,9 @@ let fight = null;
 let unlocksReturnTo = 'title';
 // per-fight callout flags so each line only fires once
 let callouts = {};
+// 3-2-1 clock, > 0 while the count is running
+let countdown = 0;
+let countdownTick = 0;
 
 // current robot design. the stack is an ordered bottom-up list:
 // one drive part, then hull sections
@@ -110,16 +113,20 @@ function goBuild() {
 
 function goFight() {
   if (state === 'fight' || validateDesign(design)) return;
+  // drop focus so spacebar skips the count, not the button
+  document.activeElement?.blur?.();
   state = 'fight';
   callouts = {};
   fight = new Fight(design, opponent);
+  fight.held = true; // the count owns the clock until the horn
+  countdown = 3.999;
+  countdownTick = 4;
   renderer.buildRobot(design, 'you');
   renderer.buildRobot(OPPONENTS[opponent].design, 'foe');
   renderer.setMode('fight');
   ui.showScreen('battle-ui');
   ui.setFoeName(OPPONENTS[opponent].name);
   ui.updateBattleReadout(fight);
-  audio.startMotor();
 }
 
 function goResults() {
@@ -202,6 +209,14 @@ document.getElementById('btn-clear').addEventListener('click', () => { audio.cli
 document.getElementById('btn-title').addEventListener('click', () => { audio.click(); goTitle(); });
 document.getElementById('btn-again').addEventListener('click', () => { audio.click(); goBuild(); });
 
+// spacebar skips the countdown, for the impatient
+window.addEventListener('keydown', (e) => {
+  if (e.code !== 'Space') return;
+  if (state !== 'fight' || !fight || fight.done) return;
+  e.preventDefault();
+  if (fight.held) countdown = Math.min(countdown, 0.01);
+});
+
 const muteBtn = document.getElementById('btn-mute');
 function refreshMuteLabel() {
   muteBtn.textContent = audio.muted ? 'Sound: Off' : 'Sound: On';
@@ -225,6 +240,22 @@ function frame(now) {
   last = now;
 
   if (state === 'fight' && fight) {
+    // run the count before letting the robots loose
+    if (fight.held) {
+      countdown -= dt;
+      const tick = Math.ceil(countdown);
+      if (tick < countdownTick && tick > 0) {
+        countdownTick = tick;
+        ui.flashEvent(String(tick));
+        audio.ping();
+      }
+      if (countdown <= 0) {
+        fight.held = false;
+        audio.horn();
+        audio.startMotor();
+        ui.flashEvent('Fight');
+      }
+    }
     if (!fight.done) {
       fight.step(dt);
       handleFightEvents();

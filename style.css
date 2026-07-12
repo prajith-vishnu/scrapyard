@@ -383,6 +383,7 @@ td:last-child.stat-bad { color: var(--red); }
   transition: width 0.2s linear;
 }
 .hp-fill.foe { background: var(--dim); }
+.keyhint { margin: 12px 0 0; }
 /* segment ticks over the fill */
 .hp-bar::after {
   content: '';

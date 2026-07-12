@@ -154,6 +154,26 @@ export const audio = {
     }
   },
 
+  // the fight horn: two blasts of a filtered square buzzer
+  horn() {
+    const c = ensureCtx();
+    const t = c.currentTime;
+    for (const [dt0, len] of [[0, 0.18], [0.24, 0.45]]) {
+      const o = c.createOscillator();
+      const f = c.createBiquadFilter();
+      const g = c.createGain();
+      o.type = 'square';
+      o.frequency.setValueAtTime(196, t + dt0);
+      f.type = 'lowpass';
+      f.frequency.value = 900;
+      g.gain.setValueAtTime(0.22, t + dt0);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dt0 + len);
+      o.connect(f).connect(g).connect(master);
+      o.start(t + dt0);
+      o.stop(t + dt0 + len + 0.02);
+    }
+  },
+
   // bright little ping for callouts
   ping() {
     const c = ensureCtx();
