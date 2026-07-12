@@ -53,6 +53,14 @@ export class Renderer {
     this.flashT = 0;
     this.camTarget = new THREE.Vector3(0, 2, 0);
 
+    // loose chunks knocked off by heavy hits
+    this.debris = [];
+    this.debrisGeo = new THREE.BoxGeometry(0.14, 0.1, 0.12);
+    this.debrisMats = [
+      new THREE.MeshStandardMaterial({ color: 0x3a3d42, metalness: 0.8, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: 0x7a4a30, metalness: 0.5, roughness: 0.8 }),
+    ];
+
     // two robots share the arena: yours and whoever you picked on
     this.bots = { you: this.makeBotSlot(), foe: this.makeBotSlot() };
     this.bots.foe.group.rotation.y = Math.PI; // faces you
@@ -829,6 +837,22 @@ export class Renderer {
     }
     this.flashT = 1;
     this.arcLight.position.set(p.x, 2.2, p.z);
+    // heavy hits knock a chunk or two loose
+    if (dmg >= 25) {
+      for (let i = 0; i < 1 + Math.floor(Math.random() * 2); i++) {
+        const m = new THREE.Mesh(this.debrisGeo, this.debrisMats[i % 2]);
+        m.scale.setScalar(0.7 + Math.random() * 0.9);
+        m.position.set(p.x, p.y + 1, p.z);
+        m.castShadow = true;
+        this.scene.add(m);
+        this.debris.push({
+          mesh: m,
+          vel: new THREE.Vector3((Math.random() - 0.5) * 6, 3 + Math.random() * 3.5, (Math.random() - 0.5) * 6),
+          spin: (Math.random() - 0.5) * 12,
+          age: 0,
+        });
+      }
+    }
   }
 
   wreckBot(slotName) {
@@ -841,8 +865,27 @@ export class Renderer {
         3, 1.2, 4
       );
     }
-    bot.group.visible = false;
+    // the loser keels over and burns instead of disappearing
     bot.dead = true;
+    bot.tipT = 0;
+  }
+
+  updateDebris(dt) {
+    for (let i = this.debris.length - 1; i >= 0; i--) {
+      const d = this.debris[i];
+      d.age += dt;
+      if (d.mesh.position.y > this.arenaY + 0.07) {
+        d.vel.y -= 12 * dt;
+        d.mesh.position.addScaledVector(d.vel, dt);
+        d.mesh.rotation.x += d.spin * dt;
+        d.mesh.rotation.z += d.spin * 0.7 * dt;
+        if (d.mesh.position.y < this.arenaY + 0.07) d.mesh.position.y = this.arenaY + 0.07;
+      }
+      if (d.age > 3.5) {
+        this.scene.remove(d.mesh);
+        this.debris.splice(i, 1);
+      }
+    }
   }
 
   // ---- per-frame update ----
@@ -873,6 +916,9 @@ export class Renderer {
       this.bots.foe.group.position.set(12, this.arenaY, 0);
       this.bots.foe.group.rotation.set(0, Math.PI, 0);
       this.bots.foe.group.visible = true;
+      // sweep up whatever the last fight left lying around
+      for (const d of this.debris) this.scene.remove(d.mesh);
+      this.debris = [];
     }
   }
 
@@ -922,6 +968,7 @@ export class Renderer {
     this.arcLight.intensity = this.flashT * 26;
 
     this.updateParticles(dt);
+    this.updateDebris(dt);
 
     // keep the sky dome and moon anchored to the camera so they read
     // as infinitely far away
@@ -938,7 +985,23 @@ export class Renderer {
   updateFightVisuals(dt, fight) {
     for (const [slotName, sim] of [['you', fight.you], ['foe', fight.foe]]) {
       const bot = this.bots[slotName];
-      if (bot.dead) continue;
+      if (bot.dead) {
+        // topple away from the winner, then sit there smoking
+        if (bot.tipT < 1) {
+          bot.tipT = Math.min(1, bot.tipT + dt * 1.4);
+          const fall = bot.tipT * bot.tipT;
+          bot.group.rotation.z = fall * 1.25;
+          bot.group.position.y = this.arenaY + Math.sin(bot.tipT * Math.PI) * 0.12;
+        }
+        if (Math.random() < 0.35) {
+          this.spawnParticle(
+            new THREE.Vector3(bot.group.position.x, this.arenaY + 0.6, bot.group.position.z),
+            new THREE.Vector3(0.3, 1.3 + Math.random(), 0),
+            0.7, 1.7, 3.4, 1
+          );
+        }
+        continue;
+      }
       bot.group.position.x = sim.pos;
       // rock and bounce a little while driving
       if (sim.moving && !fight.done) {
