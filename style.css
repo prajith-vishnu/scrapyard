@@ -1,17 +1,17 @@
-/* the ui is painted like the signage around a scrapyard: dark shop
-   steel, hazard yellow stencils, and hand-cut plates with hard
-   shadows. red is for anything that will get you hurt */
+/* neon test: same signage, but the yard went night shift. cold steel,
+   glowing cyan stencils, terminal scanlines. the variable is still
+   called yellow because renaming it everywhere was not worth it */
 :root {
-  --steel: #24272c;
-  --steel-dim: #1b1d21;
-  --edge: #101114;
-  --line: #474d57;
-  --text: #ece7da;
-  --dim: #98917f;
-  --yellow: #f0b429;
-  --red: #e0503a;
-  --green: #8db56b;
-  --shadow: rgba(0, 0, 0, 0.55);
+  --steel: #12181f;
+  --steel-dim: #0b1015;
+  --edge: #05080b;
+  --line: #24444f;
+  --text: #d8eef2;
+  --dim: #5f8a94;
+  --yellow: #3fd8e8;
+  --red: #ff4a6a;
+  --green: #4ee8a4;
+  --shadow: rgba(0, 0, 0, 0.6);
   --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-stencil: 'Arial Black', 'Arial Bold', Impact, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
@@ -23,7 +23,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #0a0c10;
+  background: #04060a;
   color: var(--text);
   font-family: var(--font-body);
 }
@@ -38,14 +38,22 @@ html, body {
 .screen > * { pointer-events: auto; }
 .hidden { display: none !important; }
 
-/* steel plates with a solid drop shadow, like they were cut with a
-   torch and bolted up slightly crooked */
+/* steel plates with a solid drop shadow, now backlit like old
+   terminal housings */
 .panel, .title-block {
   position: relative;
   background: var(--steel);
-  border: 2px solid var(--edge);
-  box-shadow: 5px 5px 0 var(--shadow);
+  border: 1px solid var(--line);
+  box-shadow: 5px 5px 0 var(--shadow), 0 0 22px rgba(63, 216, 232, 0.08);
   padding: 16px;
+}
+/* faint scanlines over every plate */
+.panel::before, .title-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(216, 238, 242, 0.025) 0 1px, transparent 1px 3px);
+  pointer-events: none;
 }
 
 /* type */
@@ -57,7 +65,7 @@ h1 {
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--yellow);
-  text-shadow: 3px 3px 0 var(--edge);
+  text-shadow: 3px 3px 0 var(--edge), 0 0 20px rgba(63, 216, 232, 0.55);
 }
 h1::after {
   content: '';
@@ -100,7 +108,7 @@ h2.spaced { margin-top: 16px; }
   color: var(--yellow);
   margin-bottom: 13px;
 }
-.kicker::before { content: 'lot 47 // '; color: var(--dim); }
+.kicker::before { content: 'sector 07 // '; color: var(--dim); }
 
 .tagline {
   color: var(--dim);
@@ -437,7 +445,7 @@ td:last-child.stat-bad { color: var(--red); }
 }
 /* your bar anchors at the clock and drains outward */
 .fighter:not(.foe) .hp-fill { margin-left: auto; }
-.hp-fill.foe { background: #776f5e; }
+.hp-fill.foe { background: #5c7078; }
 /* segment ticks over the fill */
 .hp-bar::after {
   content: '';
@@ -474,7 +482,7 @@ td:last-child.stat-bad { color: var(--red); }
   font-family: var(--font-stencil);
   font-weight: 900;
   color: var(--yellow);
-  text-shadow: 2px 2px 0 var(--edge);
+  text-shadow: 2px 2px 0 var(--edge), 0 0 12px rgba(63, 216, 232, 0.6);
   pointer-events: none;
   animation: dmg-float 0.9s ease-out forwards;
   z-index: 15;
