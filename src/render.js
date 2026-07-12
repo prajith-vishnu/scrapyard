@@ -685,6 +685,14 @@ export class Renderer {
         this.pColor[i * 3] = f; this.pColor[i * 3 + 1] = f * 0.9; this.pColor[i * 3 + 2] = f * 0.72;
         this.pSize[i] = this.pBaseSize[i] * (1 + t * 1.8);
         this.pAlpha[i] = 0.35 * (1 - t);
+      } else if (this.pType[i] === 2) {
+        // arc bolt: blue-white, snaps out fast
+        const f = 1 - t;
+        this.pColor[i * 3] = 0.7 + 0.3 * f;
+        this.pColor[i * 3 + 1] = 0.8 + 0.2 * f;
+        this.pColor[i * 3 + 2] = 1.0;
+        this.pSize[i] = this.pBaseSize[i] * (0.5 + f * 0.5);
+        this.pAlpha[i] = f;
       } else {
         // sparks: white-hot to orange to a dim red tail, falling
         this.pVel[i * 3 + 1] -= 9 * dt;
@@ -753,6 +761,8 @@ export class Renderer {
 
     bot.height = y;
     bot.dead = false;
+    bot.hammerT = 0;
+    bot.zapFlash = 0;
     bot.group.rotation.z = 0;
     bot.group.visible = bot.parts.length > 0;
     return y;
@@ -779,6 +789,32 @@ export class Renderer {
   }
 
   // ---- fight events ----
+
+  // one-shot hammer slam, played back over the next half second
+  swingHammer(slotName) {
+    this.bots[slotName].hammerT = 1;
+  }
+
+  // arc bolt from the zapper tip to the other robot
+  zapBolt(fromSlot) {
+    const from = this.bots[fromSlot];
+    const to = this.bots[fromSlot === 'you' ? 'foe' : 'you'];
+    if (!from.refs.zapTips.length) return;
+    const a = new THREE.Vector3();
+    from.refs.zapTips[0].getWorldPosition(a);
+    const b = to.group.position.clone();
+    b.y += 0.9;
+    for (let i = 0; i < 14; i++) {
+      const t = i / 13;
+      const p = a.clone().lerp(b, t);
+      p.y += Math.sin(t * Math.PI) * 0.4 + (Math.random() - 0.5) * 0.35;
+      p.z += (Math.random() - 0.5) * 0.35;
+      this.spawnParticle(p, new THREE.Vector3(0, 0, 0), 0.6, 0.22, 1.6, 2);
+    }
+    from.zapFlash = 1;
+    this.flashT = 1;
+    this.arcLight.position.copy(b);
+  }
 
   hitSpark(slotName, dmg) {
     const bot = this.bots[slotName];
@@ -927,6 +963,20 @@ export class Renderer {
       }
       for (const pad of bot.refs.pads) {
         pad.emissiveIntensity = 0.6 + Math.sin(this.animTime * 7) * 0.25;
+      }
+      // hammer slam: quick drop, slow lift back to the ready pose
+      if (bot.hammerT > 0) {
+        bot.hammerT = Math.max(0, bot.hammerT - dt * 2);
+        const t = 1 - bot.hammerT;
+        const z = t < 0.18 ? -0.35 + (t / 0.18) * 0.95 : 0.6 - ((t - 0.18) / 0.82) * 0.95;
+        for (const h of bot.refs.hammers) h.rotation.z = z;
+      }
+      // zapper tip flares when it fires
+      if (bot.zapFlash > 0) {
+        bot.zapFlash = Math.max(0, bot.zapFlash - dt * 4);
+        for (const tip of bot.refs.zapTips) {
+          tip.material.emissiveIntensity = 0.4 + bot.zapFlash * 2.6;
+        }
       }
     }
 

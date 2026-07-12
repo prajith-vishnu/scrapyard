@@ -154,6 +154,34 @@ export const audio = {
     }
   },
 
+  // electric snap for the zapper: falling sawtooth plus a hiss
+  zap() {
+    const c = ensureCtx();
+    const t = c.currentTime;
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(1700, t);
+    o.frequency.exponentialRampToValueAtTime(280, t + 0.12);
+    g.gain.setValueAtTime(0.12, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    o.connect(g).connect(master);
+    o.start(t);
+    o.stop(t + 0.16);
+
+    const src = c.createBufferSource();
+    src.buffer = noiseBuffer(0.15);
+    const f = c.createBiquadFilter();
+    f.type = 'highpass';
+    f.frequency.value = 3200;
+    const ng = c.createGain();
+    ng.gain.setValueAtTime(0.07, t);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    src.connect(f).connect(ng).connect(master);
+    src.start(t);
+    src.stop(t + 0.15);
+  },
+
   crash() {
     const c = ensureCtx();
     const t = c.currentTime;
