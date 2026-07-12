@@ -158,7 +158,7 @@ export function updateBattleReadout(fight) {
   $('bt-foe-hp').textContent = Math.max(0, Math.round(fight.foe.hp)) + ' / ' + fight.foe.maxHp;
   $('bt-you-fill').style.width = (youFrac * 100) + '%';
   $('bt-foe-fill').style.width = (foeFrac * 100) + '%';
-  $('bt-time').textContent = Math.floor(fight.time) + ' s';
+  $('bt-time').textContent = String(Math.floor(fight.time));
 }
 
 let eventTimer = null;

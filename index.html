@@ -67,14 +67,18 @@
 
   <!-- battle mode -->
   <div id="battle-ui" class="screen hidden">
-    <div id="battle-readout" class="panel">
-      <div class="hp-row"><span>You</span><span id="bt-you-hp">-</span></div>
-      <div class="hp-bar"><div id="bt-you-fill" class="hp-fill"></div></div>
-      <div class="hp-row"><span id="foe-name">Them</span><span id="bt-foe-hp">-</span></div>
-      <div class="hp-bar"><div id="bt-foe-fill" class="hp-fill foe"></div></div>
-      <div class="hp-row time-row"><span>Time</span><span id="bt-time">0 s</span></div>
-      <p class="hint keyhint">space = skip the countdown</p>
+    <div id="vs-hud">
+      <div class="fighter">
+        <div class="hp-bar"><div id="bt-you-fill" class="hp-fill"></div></div>
+        <div class="hp-row"><span>You</span><span id="bt-you-hp">-</span></div>
+      </div>
+      <div id="bt-time">0</div>
+      <div class="fighter foe">
+        <div class="hp-bar"><div id="bt-foe-fill" class="hp-fill foe"></div></div>
+        <div class="hp-row"><span id="foe-name">Them</span><span id="bt-foe-hp">-</span></div>
+      </div>
     </div>
+    <p class="hint keyhint">space = skip the countdown</p>
     <div id="fight-event"></div>
   </div>
 

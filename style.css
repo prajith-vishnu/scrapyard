@@ -398,13 +398,19 @@ td:last-child.stat-bad { color: var(--red); }
   color: var(--dim);
 }
 
-/* battle readout */
-#battle-readout {
+/* the fight hud runs across the top like a broadcast: your bar drains
+   toward the middle, theirs drains the other way, clock in between */
+#vs-hud {
   position: absolute;
-  left: 16px;
-  top: 16px;
-  width: 240px;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(780px, 88vw);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
+.fighter { flex: 1; }
 .hp-row {
   display: flex;
   justify-content: space-between;
@@ -413,24 +419,24 @@ td:last-child.stat-bad { color: var(--red); }
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--dim);
-  margin-top: 10px;
+  margin-top: 5px;
 }
-.hp-row:first-child { margin-top: 0; }
 .hp-row span:last-child { color: var(--text); font-weight: 700; }
-.hp-row.time-row { margin-top: 12px; }
-.keyhint { margin: 12px 0 0; }
+.fighter.foe .hp-row { flex-direction: row-reverse; }
 .hp-bar {
   position: relative;
-  height: 12px;
+  height: 16px;
   background: var(--steel-dim);
   border: 2px solid var(--edge);
-  margin-top: 4px;
+  box-shadow: 3px 3px 0 var(--shadow);
 }
 .hp-fill {
   height: 100%;
   background: var(--yellow);
   transition: width 0.2s linear;
 }
+/* your bar anchors at the clock and drains outward */
+.fighter:not(.foe) .hp-fill { margin-left: auto; }
 .hp-fill.foe { background: #776f5e; }
 /* segment ticks over the fill */
 .hp-bar::after {
@@ -440,23 +446,45 @@ td:last-child.stat-bad { color: var(--red); }
   background: repeating-linear-gradient(90deg, transparent 0 10px, var(--steel) 10px 12px);
   pointer-events: none;
 }
+#bt-time {
+  min-width: 62px;
+  text-align: center;
+  background: var(--steel);
+  border: 2px solid var(--yellow);
+  box-shadow: 3px 3px 0 var(--shadow);
+  font-family: var(--font-stencil);
+  font-size: 1.25rem;
+  color: var(--yellow);
+  padding: 7px 6px 6px;
+}
+.keyhint {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--steel);
+  border: 1px solid var(--line);
+  padding: 4px 12px;
+  margin: 0;
+}
 
-/* fight events look like a stencil sprayed on the screen */
+/* fight events land big and crooked, like a card held up at ringside */
 #fight-event {
   position: absolute;
-  top: 15%;
+  top: 17%;
   left: 50%;
   width: auto;
   transform: translateX(-50%) rotate(-1.5deg);
   background: var(--steel);
-  border: 2px solid var(--yellow);
-  box-shadow: 4px 4px 0 var(--shadow);
-  padding: 8px 18px;
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  letter-spacing: 0.22em;
+  border: 3px solid var(--yellow);
+  box-shadow: 5px 5px 0 var(--shadow);
+  padding: 10px 24px;
+  font-family: var(--font-stencil);
+  font-size: 1.6rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--yellow);
+  text-shadow: 2px 2px 0 var(--edge);
   opacity: 0;
   transition: opacity 0.25s;
 }
