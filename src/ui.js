@@ -95,7 +95,7 @@ export function renderStack(design, onRemove) {
   }
   for (const row of rows) {
     const btn = document.createElement('button');
-    btn.className = 'stack-item';
+    btn.className = 'chip';
     btn.textContent = row.label;
     btn.addEventListener('click', () => { audio.click(); onRemove(row.key); });
     list.appendChild(btn);
@@ -111,7 +111,7 @@ export function renderStats(design) {
 
   const spEl = $('stat-speed');
   spEl.textContent = s.speed > 0 ? s.speed.toFixed(1) + ' m/s' : '-';
-  spEl.className = s.speed >= 2 ? 'stat-good' : s.speed >= 1.2 ? '' : 'stat-bad';
+  spEl.className = 'tile-value' + (s.speed >= 2 ? ' stat-good' : s.speed >= 1.2 ? '' : ' stat-bad');
 
   const warning = validateDesign(design);
   const warnEl = $('build-warning');

@@ -195,32 +195,94 @@ h2.spaced { margin-top: 16px; }
   z-index: 20;
 }
 
-/* build mode layout */
+/* build mode: parts down the left, the bench along the bottom, the
+   current build hanging as tags across the top */
 #palette {
   position: absolute;
   left: 16px;
   top: 16px;
-  bottom: 16px;
+  bottom: 128px;
   width: 250px;
   overflow-y: auto;
 }
-#stats {
+#opponent-card {
   position: absolute;
   right: 16px;
   top: 16px;
   width: 252px;
-  /* stop above the stack panel and scroll instead of overlapping it */
-  max-height: calc(78vh - 88px);
+  max-height: 50vh;
   overflow-y: auto;
 }
-#stack-panel {
+#build-chips {
   position: absolute;
-  right: 16px;
-  bottom: 56px; /* leaves the corner free for the sound toggle */
-  width: 252px;
-  max-height: 22vh;
-  overflow-y: auto;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 46vw;
+  padding: 10px 14px;
+  text-align: center;
 }
+#stack-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.chips-hint { margin: 8px 0 0; }
+.chip {
+  display: inline-block;
+  width: auto;
+  background: var(--steel-dim);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 5px 10px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+}
+.chip:hover {
+  border-color: var(--red);
+  color: var(--red);
+  text-decoration: line-through;
+}
+#workbench {
+  position: absolute;
+  left: 282px;
+  right: 100px; /* leaves the corner free for the sound toggle */
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.tile {
+  background: var(--steel-dim);
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  text-align: center;
+  min-width: 76px;
+}
+.tile-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--dim);
+}
+.tile-value {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text);
+  margin-top: 2px;
+}
+.tile-value.stat-good { color: var(--green); }
+.tile-value.stat-bad { color: var(--red); }
+#workbench .btn { width: auto; margin: 0; }
+#workbench #btn-fight { margin: 0; padding: 13px 28px; }
 
 .hint {
   font-family: var(--font-mono);
@@ -298,11 +360,14 @@ td:last-child.stat-good { color: var(--green); }
 td:last-child.stat-bad { color: var(--red); }
 
 #build-warning {
+  flex: 1;
+  min-width: 150px;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--red);
   min-height: 1.2em;
-  margin: 10px 0 2px;
+  margin: 0;
+  text-align: right;
 }
 #build-warning.advice { color: #c9a227; }
 
@@ -331,27 +396,6 @@ td:last-child.stat-bad { color: var(--red); }
   font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--dim);
-}
-
-/* stack list: strikethrough on hover hints at removal */
-.stack-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: var(--steel);
-  border: 1px solid var(--line);
-  color: var(--text);
-  padding: 6px 10px;
-  margin-bottom: 4px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-}
-.stack-item:hover {
-  border-color: var(--red);
-  color: var(--red);
-  text-decoration: line-through;
 }
 
 /* battle readout */
@@ -419,15 +463,25 @@ td:last-child.stat-bad { color: var(--red); }
 #fight-event.show { opacity: 1; }
 #fight-event:empty { display: none; }
 
-/* title + results + unlocks blocks */
+/* the title plate hangs low in the corner like a sign by the gate,
+   results and the catalog sit centered like a posted notice */
 .title-block {
   position: absolute;
-  top: 50%;
-  left: 8%;
-  transform: translateY(-50%) rotate(-0.6deg);
-  max-width: 400px;
+  bottom: 44px;
+  left: 44px;
+  transform: rotate(-0.6deg);
+  max-width: 460px;
   padding: 30px 32px 36px;
   border-top: 10px solid var(--yellow);
+}
+.title-block .btn-row { align-items: stretch; }
+.title-block .btn-row .btn-big { flex: 1.4; }
+.title-block.center {
+  bottom: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
 }
 .title-block.wide { max-width: 570px; }
 
@@ -495,10 +549,10 @@ td:last-child.stat-bad { color: var(--red); }
   font-weight: 700;
 }
 
-/* camera hint at the bottom of build mode */
+/* camera hint above the bench */
 #build-hint {
   position: fixed;
-  bottom: 16px;
+  bottom: 122px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--steel);
@@ -581,7 +635,8 @@ td:last-child.stat-bad { color: var(--red); }
 ::-webkit-scrollbar-thumb { background: var(--line); }
 
 @media (max-width: 900px) {
-  #palette, #stats, #stack-panel { width: 206px; }
+  #palette, #opponent-card { width: 206px; }
+  #workbench { left: 238px; }
   h1 { font-size: 2.1rem; }
-  .title-block { left: 5%; padding: 22px; }
+  .title-block { left: 20px; bottom: 20px; padding: 22px; }
 }
