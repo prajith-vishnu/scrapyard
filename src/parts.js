@@ -118,13 +118,13 @@ function getHullTextures() {
     g.stroke();
   }
   drawSeams(g, 512, 128, 170);
-  // hazard stripe band near the top
+  // lit stripe band near the top
   g.save();
   g.beginPath();
   g.rect(0, 26, 512, 20);
   g.clip();
   for (let x = -40; x < 552; x += 24) {
-    g.fillStyle = x % 48 === 8 ? '#c9a227' : '#1d1e22';
+    g.fillStyle = x % 48 === 8 ? '#3fd8e8' : '#10181d';
     g.beginPath();
     g.moveTo(x, 46); g.lineTo(x + 12, 26); g.lineTo(x + 24, 26); g.lineTo(x + 12, 46);
     g.fill();
@@ -279,7 +279,7 @@ function buildHover() {
     const pad = new THREE.Mesh(
       new THREE.CylinderGeometry(0.13, 0.16, 0.08, 12),
       new THREE.MeshStandardMaterial({
-        color: 0x24262b, emissive: 0xff7a2a, emissiveIntensity: 0.8,
+        color: 0x24262b, emissive: 0x35d8e8, emissiveIntensity: 0.9,
       })
     );
     pad.position.set(Math.cos(a) * 0.4, 0.1, Math.sin(a) * 0.4);
@@ -355,7 +355,7 @@ function buildHammer() {
   arm.position.x = 0.6;
   const head = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.42, 0.34), darkMetal());
   head.position.set(1.2, -0.1, 0);
-  const face = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.44, 0.36), paintedMaterial(0xc9a227));
+  const face = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.44, 0.36), paintedMaterial(0x2ec8dc));
   face.position.set(1.4, -0.1, 0);
   pivot.add(arm, head, face);
   pivot.rotation.z = -0.35;
@@ -383,7 +383,7 @@ function buildZapper() {
   }
   const tipMat = new THREE.MeshStandardMaterial({
     color: 0x24262b, metalness: 0.9, roughness: 0.3,
-    emissive: new THREE.Color(0xff5a1f), emissiveIntensity: 0.4,
+    emissive: new THREE.Color(0x4ae0ff), emissiveIntensity: 0.5,
   });
   const tip = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 10), tipMat);
   tip.position.set(0.48, 1.06, 0);
