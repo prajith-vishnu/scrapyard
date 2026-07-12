@@ -9,6 +9,8 @@
   --text: #d8eef2;
   --dim: #5f8a94;
   --yellow: #3fd8e8;
+  --magenta: #ff3fa8;
+  --orange: #ff8c3a;
   --red: #ff4a6a;
   --green: #4ee8a4;
   --shadow: rgba(0, 0, 0, 0.6);
@@ -72,7 +74,7 @@ h1::after {
   display: block;
   width: 110px;
   height: 9px;
-  background: repeating-linear-gradient(-45deg, var(--yellow) 0 8px, var(--edge) 8px 16px);
+  background: repeating-linear-gradient(-45deg, var(--yellow) 0 8px, var(--magenta) 8px 16px, var(--orange) 16px 24px);
   margin-top: 13px;
 }
 
@@ -105,7 +107,7 @@ h2.spaced { margin-top: 16px; }
   font-size: 0.66rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--orange);
   margin-bottom: 13px;
 }
 .kicker::before { content: 'sector 07 // '; color: var(--dim); }
@@ -115,11 +117,78 @@ h2.spaced { margin-top: 16px; }
   margin: 14px 0 22px;
 }
 
+/* the title floats straight over the yard, no plate behind it */
+#title-wrap {
+  position: absolute;
+  left: 46px;
+  bottom: 168px;
+  max-width: 600px;
+}
+#title-wrap h1 {
+  font-size: 4.4rem;
+  transform: rotate(-1.2deg);
+  text-shadow:
+    0.055em 0.055em 0 var(--magenta),
+    0.11em 0.11em 0 var(--edge),
+    0 0 28px rgba(63, 216, 232, 0.5);
+}
+#title-wrap .tagline { text-shadow: 1px 1px 0 var(--edge); }
+
+/* menu: chunky slanted tiles, one color each, like arcade cabinets */
+#title-menu {
+  position: absolute;
+  left: 46px;
+  bottom: 46px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+.menu-tile {
+  appearance: none;
+  cursor: pointer;
+  padding: 15px 26px 12px;
+  font-family: var(--font-stencil);
+  font-weight: 900;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--edge);
+  box-shadow: 5px 5px 0 var(--shadow);
+  transform: skewX(-7deg);
+  transition: background 0.1s, color 0.1s;
+}
+.menu-tile span {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  margin-top: 6px;
+}
+.menu-tile:active { transform: skewX(-7deg) translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
+.menu-tile.go {
+  background: var(--yellow);
+  color: #06090c;
+  box-shadow: 5px 5px 0 var(--shadow), 0 0 24px rgba(63, 216, 232, 0.35);
+}
+.menu-tile.go span { color: rgba(6, 9, 12, 0.65); }
+.menu-tile.go:hover { background: var(--text); }
+.menu-tile.alt {
+  background: rgba(11, 16, 21, 0.8);
+  color: var(--magenta);
+  border-color: var(--magenta);
+  box-shadow: 5px 5px 0 var(--shadow), 0 0 18px rgba(255, 63, 168, 0.25);
+}
+.menu-tile.alt span { color: var(--dim); }
+.menu-tile.alt:hover { background: var(--magenta); color: #06090c; }
+.menu-tile.alt:hover span { color: rgba(6, 9, 12, 0.65); }
+
 .title-best {
-  margin-top: 16px;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--dim);
+  color: var(--green);
+  margin: 0 0 4px 10px;
+  text-shadow: 1px 1px 0 var(--edge);
 }
 
 /* a strip of hazard tape peeling off the corner of the big plates */
@@ -692,5 +761,7 @@ td:last-child.stat-bad { color: var(--red); }
   #palette, #opponent-card { width: 206px; }
   #workbench { left: 238px; }
   h1 { font-size: 2.1rem; }
-  .title-block { left: 20px; bottom: 20px; padding: 22px; }
+  #title-wrap { left: 20px; bottom: 150px; }
+  #title-wrap h1 { font-size: 3rem; }
+  #title-menu { left: 20px; bottom: 24px; flex-wrap: wrap; }
 }
