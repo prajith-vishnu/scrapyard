@@ -1,0 +1,494 @@
+/* the ui is styled like pages cut out of an old workshop service
+   manual: cream paper, hard black borders with a print offset shadow,
+   black section tabs, and red ink for anything important */
+:root {
+  --paper: #f2eee1;
+  --paper-dim: #e7e2d1;
+  --ink: #1a1b1d;
+  --dim: #6f6a5a;
+  --red: #d8451f;
+  --green: #2e7d4a;
+  --shadow: rgba(15, 15, 18, 0.45);
+  --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0c10;
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+.screen { position: fixed; inset: 0; pointer-events: none; }
+.screen > * { pointer-events: auto; }
+.hidden { display: none !important; }
+
+/* paper panels with a solid offset shadow, like a sticker on a page */
+.panel, .title-block {
+  position: relative;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--shadow);
+  padding: 16px;
+}
+
+/* type */
+h1 {
+  font-weight: 800;
+  font-size: 2.7rem;
+  line-height: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+h1::after {
+  content: '';
+  display: block;
+  width: 74px;
+  height: 7px;
+  background: var(--red);
+  margin-top: 13px;
+}
+
+/* section headers as black tabs */
+h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 4px 9px 3px;
+  margin-bottom: 12px;
+}
+h2::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  background: var(--red);
+  flex-shrink: 0;
+}
+h2.spaced { margin-top: 16px; }
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 13px;
+}
+.kicker::before { content: 'doc 01 // '; color: var(--dim); }
+
+.tagline {
+  color: var(--dim);
+  margin: 14px 0 22px;
+}
+
+.title-best {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--dim);
+}
+
+/* a little barcode in the corner of cover pages, because print */
+.title-block::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  width: 74px;
+  height: 15px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 2px, transparent 2px 5px,
+    var(--ink) 5px 6px, transparent 6px 10px,
+    var(--ink) 10px 13px, transparent 13px 16px
+  );
+  opacity: 0.85;
+}
+
+/* buttons: stamped ink boxes that fill on hover */
+.btn {
+  appearance: none;
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 16px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--shadow);
+  transition: background 0.1s, color 0.1s;
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
+.btn:disabled {
+  background: var(--paper-dim);
+  color: var(--dim);
+  border-color: var(--dim);
+  cursor: default;
+  box-shadow: none;
+}
+.btn:disabled:hover { background: var(--paper-dim); color: var(--dim); }
+
+.btn-big {
+  background: var(--red);
+  border-color: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+  padding: 13px 16px;
+}
+.btn-big:hover { background: var(--ink); color: var(--paper); }
+
+/* the fight button gets caution stripes, printed in ink and red */
+#btn-fight {
+  position: relative;
+  margin: 16px 0 10px;
+}
+#btn-fight::before, #btn-fight::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  height: 6px;
+  background: repeating-linear-gradient(-45deg, var(--ink) 0 7px, var(--red) 7px 14px);
+}
+#btn-fight::before { top: -9px; }
+#btn-fight::after { bottom: -9px; }
+#btn-fight:disabled::before, #btn-fight:disabled::after { opacity: 0.15; }
+
+.btn-row { display: flex; gap: 10px; }
+.btn-row .btn { flex: 1; }
+
+.corner-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: auto;
+  padding: 7px 14px;
+  font-size: 0.68rem;
+  z-index: 20;
+}
+
+/* build mode layout */
+#palette {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 250px;
+  overflow-y: auto;
+}
+#stats {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 252px;
+  /* stop above the stack panel and scroll instead of overlapping it */
+  max-height: calc(78vh - 88px);
+  overflow-y: auto;
+}
+#stack-panel {
+  position: absolute;
+  right: 16px;
+  bottom: 56px; /* leaves the corner free for the sound toggle */
+  width: 252px;
+  max-height: 22vh;
+  overflow-y: auto;
+}
+
+.hint {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.part-category {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin: 16px 0 6px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 3px;
+}
+.part-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-left: 4px solid var(--ink);
+  color: var(--ink);
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+.part-btn:hover { border-color: var(--red); border-left-color: var(--red); }
+.part-btn .part-sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--dim);
+  margin-top: 3px;
+}
+.part-btn.active {
+  border-left-color: var(--red);
+  background: #fbe9de;
+}
+.part-btn.locked {
+  border-style: dashed;
+  opacity: 0.6;
+  cursor: default;
+  background: var(--paper-dim);
+}
+.part-btn.locked .part-sub { color: var(--red); }
+.part-btn.locked:hover { border-color: var(--ink); }
+
+/* stats table */
+table { width: 100%; border-collapse: collapse; }
+td {
+  padding: 4px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px dotted rgba(26, 27, 29, 0.35);
+}
+td:first-child {
+  color: var(--dim);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+td:last-child {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--ink);
+}
+td:last-child.stat-good { color: var(--green); }
+td:last-child.stat-bad { color: var(--red); }
+
+#build-warning {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--red);
+  min-height: 1.2em;
+  margin: 10px 0 2px;
+}
+
+/* opponent picker */
+.opp-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-left: 4px solid var(--ink);
+  color: var(--ink);
+  padding: 7px 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+}
+.opp-btn:hover { border-color: var(--red); border-left-color: var(--red); }
+.opp-btn.active {
+  border-left-color: var(--red);
+  background: #fbe9de;
+}
+.opp-btn .part-sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--dim);
+}
+
+/* stack list: strikethrough on hover hints at removal */
+.stack-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+.stack-item:hover {
+  border-color: var(--red);
+  color: var(--red);
+  text-decoration: line-through;
+}
+
+/* battle readout */
+#battle-readout {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 240px;
+}
+.hp-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  margin-top: 10px;
+}
+.hp-row:first-child { margin-top: 0; }
+.hp-row span:last-child { color: var(--ink); font-weight: 700; }
+.hp-row.time-row { margin-top: 12px; }
+.hp-bar {
+  position: relative;
+  height: 12px;
+  background: var(--paper-dim);
+  border: 2px solid var(--ink);
+  margin-top: 4px;
+}
+.hp-fill {
+  height: 100%;
+  background: var(--red);
+  transition: width 0.2s linear;
+}
+.hp-fill.foe { background: var(--dim); }
+/* segment ticks over the fill */
+.hp-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 10px, var(--paper) 10px 12px);
+  pointer-events: none;
+}
+
+/* fight events look like a rubber stamp slapped on the screen */
+#fight-event {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  width: auto;
+  transform: translateX(-50%) rotate(-1.5deg);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
+  padding: 8px 18px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--red);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+#fight-event.show { opacity: 1; }
+#fight-event:empty { display: none; }
+
+/* title + results + unlocks blocks */
+.title-block {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  max-width: 400px;
+  padding: 30px 32px 36px;
+  border-top: 10px solid var(--red);
+}
+.title-block.wide { max-width: 570px; }
+
+/* results */
+.results-table { margin: 12px 0; }
+.results-table td { padding: 6px 0; font-size: 0.9rem; }
+.results-score td {
+  border-top: 2px solid var(--ink);
+  border-bottom: none;
+  padding-top: 12px;
+  font-size: 1.15rem;
+}
+.results-score td:last-child { color: var(--red); }
+#res-best, #res-points {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--dim);
+  margin-bottom: 6px;
+}
+
+/* unlocks */
+#unlock-points {
+  font-family: var(--font-mono);
+  color: var(--red);
+  margin: 8px 0 16px;
+}
+#unlock-list {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.unlock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-left: 4px solid var(--ink);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+.unlock-row .part-sub {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--dim);
+}
+.unlock-row button {
+  width: auto;
+  margin: 0;
+  padding: 6px 14px;
+  font-size: 0.66rem;
+}
+.unlock-owned {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* scrollbars */
+::-webkit-scrollbar { width: 9px; }
+::-webkit-scrollbar-track { background: var(--paper-dim); }
+::-webkit-scrollbar-thumb { background: var(--ink); }
+
+@media (max-width: 900px) {
+  #palette, #stats, #stack-panel { width: 206px; }
+  h1 { font-size: 2.1rem; }
+  .title-block { left: 5%; padding: 22px; }
+}

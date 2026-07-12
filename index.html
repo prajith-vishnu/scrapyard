@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bolt a robot together out of scrap parts, throw it in the arena, and see what drives back out. A 3D game.">
+  <title>ScrapYard</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <!-- title screen -->
+  <div id="title-screen" class="screen">
+    <div class="title-block">
+      <p class="kicker">Scrap Robot League</p>
+      <h1>ScrapYard</h1>
+      <p class="tagline">Bolt it together. Send it in. Try to get it back.</p>
+      <button id="btn-start" class="btn btn-big">Start Building</button>
+      <button id="btn-unlocks" class="btn">Parts Catalog</button>
+      <p class="title-best" id="title-best"></p>
+    </div>
+  </div>
+
+  <!-- build mode -->
+  <div id="build-ui" class="screen hidden">
+    <div id="palette" class="panel">
+      <h2>Parts</h2>
+      <div id="palette-list"></div>
+    </div>
+
+    <div id="stats" class="panel">
+      <h2>Robot Stats</h2>
+      <table>
+        <tr><td>Mass</td><td id="stat-mass">-</td></tr>
+        <tr><td>Hull</td><td id="stat-hp">-</td></tr>
+        <tr><td>Damage</td><td id="stat-dmg">-</td></tr>
+        <tr><td>Reach</td><td id="stat-reach">-</td></tr>
+        <tr><td>Speed</td><td id="stat-speed">-</td></tr>
+      </table>
+      <h2 class="spaced">Opponent</h2>
+      <div id="opponent-picker"></div>
+      <div id="build-warning"></div>
+      <button id="btn-fight" class="btn btn-big">Fight</button>
+      <div class="btn-row">
+        <button id="btn-clear" class="btn">Clear</button>
+        <button id="btn-title" class="btn">Title</button>
+      </div>
+    </div>
+
+    <div id="stack-panel" class="panel">
+      <h2>Bolted On</h2>
+      <p class="hint">Click a part to unbolt it</p>
+      <div id="stack-list"></div>
+    </div>
+  </div>
+
+  <!-- battle mode -->
+  <div id="battle-ui" class="screen hidden">
+    <div id="battle-readout" class="panel">
+      <div class="hp-row"><span>You</span><span id="bt-you-hp">-</span></div>
+      <div class="hp-bar"><div id="bt-you-fill" class="hp-fill"></div></div>
+      <div class="hp-row"><span id="foe-name">Them</span><span id="bt-foe-hp">-</span></div>
+      <div class="hp-bar"><div id="bt-foe-fill" class="hp-fill foe"></div></div>
+      <div class="hp-row time-row"><span>Time</span><span id="bt-time">0 s</span></div>
+    </div>
+    <div id="fight-event"></div>
+  </div>
+
+  <!-- results -->
+  <div id="results-screen" class="screen hidden">
+    <div class="title-block">
+      <h1 id="results-heading">Fight Over</h1>
+      <table class="results-table">
+        <tr><td>Opponent</td><td id="res-opp">-</td></tr>
+        <tr><td>Time</td><td id="res-time">-</td></tr>
+        <tr><td>Damage dealt</td><td id="res-dealt">-</td></tr>
+        <tr><td>Damage taken</td><td id="res-taken">-</td></tr>
+        <tr class="results-score"><td>Score</td><td id="res-score">-</td></tr>
+      </table>
+      <p id="res-best"></p>
+      <p id="res-points"></p>
+      <button id="btn-again" class="btn btn-big">Back to Build</button>
+    </div>
+  </div>
+
+  <!-- unlocks -->
+  <div id="unlocks-screen" class="screen hidden">
+    <div class="title-block wide">
+      <h1>Parts Catalog</h1>
+      <p id="unlock-points"></p>
+      <div id="unlock-list"></div>
+      <button id="btn-unlocks-back" class="btn btn-big">Back</button>
+    </div>
+  </div>
+
+  <button id="btn-mute" class="btn corner-btn">Sound: On</button>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
