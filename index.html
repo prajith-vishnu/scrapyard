@@ -7,11 +7,13 @@
   <title>ScrapYard</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230b1015'/><rect x='7.4' y='1' width='1.2' height='2.4' fill='%233fd8e8'/><rect x='4' y='3.4' width='8' height='6.6' fill='%233fd8e8'/><rect x='5.6' y='5.2' width='1.8' height='1.8' fill='%230b1015'/><rect x='8.6' y='5.2' width='1.8' height='1.8' fill='%23ff4a6a'/><rect x='3' y='11' width='10' height='2.4' fill='%235f8a94'/></svg>">
   <link rel="stylesheet" href="style.css">
+  <!-- three.js lives in the repo instead of on a cdn, so the game still
+       works on bad wifi and the version can never change under me -->
   <script type="importmap">
   {
     "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      "three": "./vendor/three/three.module.js",
+      "three/addons/": "./vendor/three/addons/"
     }
   }
   </script>
@@ -115,18 +117,22 @@
 
   <button id="btn-mute" class="btn corner-btn">Sound: On</button>
 
-  <p id="boot-error" class="hidden">
-    Could not load three.js from the CDN. Check your internet
-    connection and refresh the page.
-  </p>
-
   <script>
-    // if the module or the cdn fails, say so instead of a dead page
+    // if the game never boots, put up a message saying why instead of
+    // leaving a dead black page. the text gets built here rather than
+    // sitting hidden in the html, so nothing that reads the page
+    // without running it thinks the game is broken
     window.addEventListener('load', function () {
       setTimeout(function () {
-        if (!window.__gameBooted) {
-          document.getElementById('boot-error').classList.remove('hidden');
-        }
+        if (window.__gameBooted) return;
+        var canvas = document.createElement('canvas');
+        var gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+        var box = document.createElement('p');
+        box.id = 'boot-error';
+        box.textContent = gl
+          ? 'Something went wrong starting the game. Refresh the page.'
+          : 'This browser cannot do 3D graphics (WebGL is off or unsupported), so the game cannot start.';
+        document.body.appendChild(box);
       }, 6000);
     });
   </script>
