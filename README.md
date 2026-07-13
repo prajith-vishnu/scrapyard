@@ -55,6 +55,10 @@ Drag to orbit the camera in build mode and scroll to zoom.
 
 ## Running Locally
 
+There is nothing to install. Three.js is checked into `vendor/` instead
+of being pulled off a CDN, so the game runs with no network at all and
+the version can never change under me.
+
 The game uses ES modules, so it needs to be served over HTTP rather
 than opened straight from the filesystem. Any static server works:
 
