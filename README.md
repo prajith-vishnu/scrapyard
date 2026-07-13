@@ -8,9 +8,10 @@ in your browser.
 ## Features
 
 - 3D build mode with orbit camera, junk metal materials, and shadows
-- A desert junkyard to fight in: a dirt pit ringed with concrete
-  barriers, walls of crushed cars, tire stacks, floodlights, a crane
-  frozen mid-drop, and mountains on the horizon
+- A junkyard on the edge of the city to fight in, at night: a dirt pit
+  walled in corrugated steel, bleachers with a crowd, walls of crushed
+  cars, tire stacks, a crane frozen mid-drop, and a lit skyline behind
+  it all with blinking towers and billboards
 - Thirteen parts: wheels, treads, hover pads, three hull sizes, a rip
   saw, a drop hammer, an arc zapper, side spikes, two armor sets, and
   a patch kit
@@ -21,8 +22,9 @@ in your browser.
 - Real tradeoffs: armor is heavy, heavy is slow, and slow gets zapped
   all the way in
 - A 3-2-1 count before the horn (space skips it if you are impatient)
-- Sparks on every hit, chunks knocked loose by heavy swings, and
-  wrecks that tip over and smolder instead of vanishing
+- Sparks on every hit, damage numbers, chunks knocked loose by heavy
+  swings, and wrecks that tip over and smolder instead of vanishing
+- The camera sits ringside and rattles when something big connects
 - A hull telemetry graph after every fight, you in red, them in gray
 - Ringside callouts when blood is drawn and hulls hit half
 - Eight achievements, including one for losing to the easiest robot
