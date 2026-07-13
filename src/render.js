@@ -25,6 +25,8 @@ const skyFragment = `
     vec3 horizon = vec3(0.16, 0.30, 0.38);
     vec3 zenith = vec3(0.02, 0.04, 0.10);
     vec3 col = mix(horizon, zenith, pow(h, 0.5));
+    // light pollution from the city, a thin glow band on the skyline
+    col += vec3(0.30, 0.18, 0.28) * pow(1.0 - abs(dir.y), 16.0);
     vec3 sunDir = normalize(vec3(0.62, 0.34, 0.26));
     float s = max(dot(dir, sunDir), 0.0);
     col += vec3(0.5, 0.8, 1.0) * (pow(s, 900.0) * 1.6 + pow(s, 18.0) * 0.10);
@@ -839,8 +841,9 @@ export class Renderer {
   }
 
   setupCity() {
-    // the city the scrap comes from, glowing on the horizon in two
-    // clusters so it reads like a skyline and not a fence
+    // the city wraps most of the horizon so it is the backdrop no
+    // matter where the camera drifts. the fog would eat it at this
+    // hour, so the lit faces opt out of it
     const city = new THREE.Group();
     this.beacons = [];
     const winMats = [];
@@ -848,53 +851,66 @@ export class Renderer {
       const tex = this.makeWindowTexture();
       winMats.push(new THREE.MeshStandardMaterial({
         color: 0x161c26, map: tex, emissiveMap: tex,
-        emissive: 0xffffff, emissiveIntensity: 0.85, roughness: 0.9,
+        emissive: 0xffffff, emissiveIntensity: 1.0, roughness: 0.9, fog: false,
       }));
     }
-    const mastMat = new THREE.MeshStandardMaterial({ color: 0x20262e, roughness: 0.8 });
-    const signColors = [0xff3fa8, 0xff8c3a, 0x4ee87c];
+    const mastMat = new THREE.MeshStandardMaterial({ color: 0x20262e, roughness: 0.8, fog: false });
+    const signColors = [0xff3fa8, 0xff8c3a, 0x4ee87c, 0x3fd8e8, 0xff8c3a, 0xff3fa8];
     let signIdx = 0;
-    const clusters = [
-      { angle: Math.PI * 0.72, spread: 0.6, count: 34 },
-      { angle: -Math.PI * 0.15, spread: 0.42, count: 22 },
-    ];
-    for (const cl of clusters) {
-      for (let i = 0; i < cl.count; i++) {
-        const a = cl.angle + (Math.random() - 0.5) * cl.spread;
-        const r = 520 + Math.random() * 380;
-        const w = 26 + Math.random() * 42;
-        const d = 26 + Math.random() * 42;
-        const tall = Math.random() < 0.16;
-        const h = tall ? 120 + Math.random() * 70 : 30 + Math.random() * 70;
-        const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), winMats[i % winMats.length]);
-        const x = Math.cos(a) * r;
-        const z = Math.sin(a) * r;
-        b.position.set(x, this.hillHeight(x, z) + h / 2 - 2, z);
-        b.rotation.y = Math.random() * Math.PI;
-        city.add(b);
-        if (tall) {
-          // antenna mast with a blinking aircraft beacon
-          const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 1.2, 18, 6), mastMat);
-          mast.position.set(x, b.position.y + h / 2 + 9, z);
-          const beaconMat = new THREE.MeshStandardMaterial({
-            color: 0x330a0a, emissive: 0xff2a3a, emissiveIntensity: 1,
-          });
-          const beacon = new THREE.Mesh(new THREE.SphereGeometry(1.6, 8, 8), beaconMat);
-          beacon.position.set(x, mast.position.y + 10, z);
-          city.add(mast, beacon);
-          this.beacons.push({ mat: beaconMat, phase: Math.random() * Math.PI * 2 });
-          // the first few towers get a big lit sign facing the yard
-          if (signIdx < signColors.length) {
-            const sc = signColors[signIdx++];
-            const sign = new THREE.Mesh(
-              new THREE.PlaneGeometry(w * 0.7, 14),
-              new THREE.MeshStandardMaterial({ color: sc, emissive: sc, emissiveIntensity: 1.4, side: THREE.DoubleSide })
-            );
-            const pull = (Math.max(w, d) / 2 + 2) / r;
-            sign.position.set(x * (1 - pull), b.position.y + h * 0.2, z * (1 - pull));
-            sign.lookAt(0, sign.position.y, 0);
-            city.add(sign);
-          }
+    // dark warehouse blocks in the near ground, big towers behind
+    const nearMat = new THREE.MeshStandardMaterial({ color: 0x10141a, roughness: 1, fog: false });
+    for (let i = 0; i < 18; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 150 + Math.random() * 90;
+      const h = 12 + Math.random() * 30;
+      const b = new THREE.Mesh(
+        new THREE.BoxGeometry(24 + Math.random() * 30, h, 20 + Math.random() * 26),
+        nearMat
+      );
+      const x = Math.cos(a) * r;
+      const z = Math.sin(a) * r;
+      b.position.set(x, this.hillHeight(x, z) + h / 2 - 1, z);
+      b.rotation.y = Math.random() * Math.PI;
+      city.add(b);
+    }
+    for (let i = 0; i < 76; i++) {
+      if (Math.random() < 0.22) continue; // leave some ragged gaps
+      const a = (i / 76) * Math.PI * 2 + (Math.random() - 0.5) * 0.06;
+      const r = 300 + Math.random() * 220;
+      const w = 26 + Math.random() * 44;
+      const d = 26 + Math.random() * 44;
+      const tall = Math.random() < 0.16;
+      const h = tall ? 140 + Math.random() * 90 : 40 + Math.random() * 85;
+      const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), winMats[i % winMats.length]);
+      const x = Math.cos(a) * r;
+      const z = Math.sin(a) * r;
+      b.position.set(x, this.hillHeight(x, z) + h / 2 - 2, z);
+      b.rotation.y = Math.random() * Math.PI;
+      city.add(b);
+      if (tall) {
+        // antenna mast with a blinking aircraft beacon
+        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 1.2, 20, 6), mastMat);
+        mast.position.set(x, b.position.y + h / 2 + 10, z);
+        const beaconMat = new THREE.MeshStandardMaterial({
+          color: 0x330a0a, emissive: 0xff2a3a, emissiveIntensity: 1, fog: false,
+        });
+        const beacon = new THREE.Mesh(new THREE.SphereGeometry(1.8, 8, 8), beaconMat);
+        beacon.position.set(x, mast.position.y + 11, z);
+        city.add(mast, beacon);
+        this.beacons.push({ mat: beaconMat, phase: Math.random() * Math.PI * 2 });
+        // some towers carry big lit signs facing the yard
+        if (signIdx < signColors.length) {
+          const sc = signColors[signIdx++];
+          const sign = new THREE.Mesh(
+            new THREE.PlaneGeometry(w * 0.75, 16),
+            new THREE.MeshStandardMaterial({
+              color: sc, emissive: sc, emissiveIntensity: 1.5, side: THREE.DoubleSide, fog: false,
+            })
+          );
+          const pull = (Math.max(w, d) / 2 + 2) / r;
+          sign.position.set(x * (1 - pull), b.position.y + h * 0.2, z * (1 - pull));
+          sign.lookAt(0, sign.position.y, 0);
+          city.add(sign);
         }
       }
     }
@@ -1340,7 +1356,8 @@ export class Renderer {
         Math.sin(this.titleAngle) * r
       );
       this.camera.position.lerp(goal, 0.03);
-      this.camera.lookAt(0, this.arenaY + 1.1, 0);
+      // aim a touch high so the skyline stays in frame behind the bot
+      this.camera.lookAt(0, this.arenaY + 1.7, 0);
     } else if (this.mode === 'build') {
       this.controls.update();
     } else if (this.mode === 'fight' && fight) {
