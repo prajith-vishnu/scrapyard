@@ -5,6 +5,8 @@ of scrap parts, throw it in the arena, and watch it fight to the death.
 Points from each win unlock better parts, and your progress is saved
 in your browser.
 
+Play it here: [scrapyard-eight.vercel.app](https://scrapyard-eight.vercel.app)
+
 ## Features
 
 - 3D build mode with orbit camera, junk metal materials, and shadows
