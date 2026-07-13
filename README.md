@@ -27,7 +27,7 @@ Play it here: [scrapyard-eight.vercel.app](https://scrapyard-eight.vercel.app)
 - Sparks on every hit, damage numbers, chunks knocked loose by heavy
   swings, and wrecks that tip over and smolder instead of vanishing
 - The camera sits ringside and rattles when something big connects
-- A hull telemetry graph after every fight, you in red, them in gray
+- A hull telemetry graph after every fight, you in blue, them in gray
 - Ringside callouts when blood is drawn and hulls hit half
 - Eight achievements, including one for losing to the easiest robot
 - Part unlocks, best scores, and achievements persist between sessions
