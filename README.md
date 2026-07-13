@@ -1,9 +1,9 @@
 # ScrapYard
 
-A 3D robot building and battling game. You bolt a robot together out
-of scrap parts, throw it in the arena, and watch the fight play out.
+A 3D robot building and battling game I built. You build a robot out
+of scrap parts, throw it in the arena, and watch it fight to the death.
 Points from each win unlock better parts, and your progress is saved
-in the browser.
+in your browser.
 
 ## Features
 
@@ -35,12 +35,12 @@ in the browser.
    the bottom, at least one hull section, and a weapon.
 2. Watch the stats panel: speed has to stay out of the red or you
    will get picked apart on the drive in.
-3. Pick an opponent and hit Fight. Rustbucket first. Trust me.
+3. Pick an opponent and hit Fight. Rustbucket first. (Trust me the rest of them are pretty hard to beat lol) XD
 4. Spend the points you earn in the Parts Catalog to unlock treads,
    bigger hulls, the hammer, and the zapper. Goliath is not beatable
-   with starter parts, and only barely with everything else.
+   with starter parts, and only barely with everything else because he is like the final boss to my game.
 
-Drag to orbit the camera in build mode, scroll to zoom.
+Drag to orbit the camera in build mode and scroll to zoom.
 
 ## Built With
 
