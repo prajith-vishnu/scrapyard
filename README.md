@@ -17,13 +17,13 @@ Play it here: [scrapyard-eight.vercel.app](https://scrapyard-eight.vercel.app)
 - Thirteen parts: wheels, treads, hover pads, three hull sizes, a rip
   saw, a drop hammer, an arc zapper, side spikes, two armor sets, and
   a patch kit
-- Three opponents with fixed builds: Rustbucket, the Mangler, and
+- Three opponents each with varying difficulties: Rustbucket, the Mangler, and
   Goliath
 - Fights run themselves: both robots drive in and swing on their own
   clocks, so you live with your build choices
 - Real tradeoffs: armor is heavy, heavy is slow, and slow gets zapped
   all the way in
-- A 3-2-1 count before the horn (space skips it if you are impatient)
+- A 3-2-1 countdown before the horn (space skips it if you are impatient)
 - Sparks on every hit, damage numbers, chunks knocked loose by heavy
   swings, and wrecks that tip over and smolder instead of vanishing
 - The camera sits ringside and rattles when something big connects
@@ -44,7 +44,7 @@ Play it here: [scrapyard-eight.vercel.app](https://scrapyard-eight.vercel.app)
    bigger hulls, the hammer, and the zapper. Goliath is not beatable
    with starter parts, and only barely with everything else because he is like the final boss to my game.
 
-Drag to orbit the camera in build mode and scroll to zoom.
+Drag to orbit the camera in build mode and scroll in to zoom.
 
 ## Built With
 
