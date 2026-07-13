@@ -437,10 +437,10 @@ export class Renderer {
     g.lineWidth = 6;
     g.strokeRect(8, 8, 1008, 112);
     g.fillStyle = '#3fd8e8';
-    g.font = '900 78px "Arial Black", Impact, sans-serif';
+    g.font = '900 62px "Arial Black", Impact, sans-serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
-    g.fillText('S C R A P Y A R D', 512, 70);
+    g.fillText('S C R A P Y A R D  W A R S', 512, 70);
     // eat little holes out of the paint so it reads as weathered
     g.globalCompositeOperation = 'destination-out';
     for (let i = 0; i < 320; i++) {
@@ -545,7 +545,7 @@ export class Renderer {
     // the yard sign over the far bank, wired up and buzzing
     const bannerTex = this.makeBannerTexture();
     const banner = new THREE.Mesh(
-      new THREE.PlaneGeometry(13, 1.7),
+      new THREE.PlaneGeometry(15, 1.9),
       new THREE.MeshStandardMaterial({
         map: bannerTex, emissiveMap: bannerTex, emissive: 0xffffff, emissiveIntensity: 0.7,
         transparent: true, roughness: 0.85, side: THREE.DoubleSide,
