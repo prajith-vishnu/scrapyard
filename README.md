@@ -1,4 +1,4 @@
-# ScrapYard
+# ScrapYard Wars
 
 A 3D robot building and battling game I built. You build a robot out
 of scrap parts, throw it in the arena, and watch it fight to the death.
@@ -14,17 +14,17 @@ Play it here: [scrapyard-eight.vercel.app](https://scrapyard-eight.vercel.app)
   walled in corrugated steel, bleachers with a crowd, walls of crushed
   cars, tire stacks, a crane frozen mid-drop, and a lit skyline behind
   it all with blinking towers and billboards
-- Thirteen parts: wheels, treads, hover pads, three hull sizes, a rip
+- Thirteen parts to choose from: wheels, treads, hover pads, three hull sizes, a rip
   saw, a drop hammer, an arc zapper, side spikes, two armor sets, and
   a patch kit
 - Three opponents each with varying difficulties: Rustbucket, the Mangler, and
   Goliath
-- Fights run themselves: both robots drive in and swing on their own
+- Fights run themselves and you watch: both robots drive in and swing on their own
   clocks, so you live with your build choices
-- Real tradeoffs: armor is heavy, heavy is slow, and slow gets zapped
+- Real tradeoffs (choose what you think will work best): armor is heavy, heavy is slow, and slow gets zapped
   all the way in
-- A 3-2-1 countdown before the horn (space skips it if you are impatient)
-- Sparks on every hit, damage numbers, chunks knocked loose by heavy
+- A 3-2-1 countdown before the horn (hit space to skip it if you are impatient)
+- Sparks are shown on every hit, damage numbers, chunks knocked loose by heavy
   swings, and wrecks that tip over and smolder instead of vanishing
 - The camera sits ringside and rattles when something big connects
 - A hull telemetry graph after every fight, you in blue, them in gray
