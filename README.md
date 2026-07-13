@@ -53,6 +53,17 @@ Drag to orbit the camera in build mode and scroll in to zoom.
 - HTML5 / CSS
 - Web Audio API
 
+## Credits
+
+Three.js is the only thing here I did not write. It is MIT licensed and
+a copy of it lives in `vendor/three/`, license included.
+
+Everything else is mine and made from scratch. There are no image files,
+no model files and no sound files in this project. Every texture is
+painted onto a canvas in code, every robot and every building is built
+out of boxes and cylinders, and every sound is generated with the Web
+Audio API while the game runs.
+
 ## Running Locally
 
 There is nothing to install. Three.js is checked into `vendor/` instead
