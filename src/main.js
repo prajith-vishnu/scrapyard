@@ -233,6 +233,9 @@ refreshMuteLabel();
 
 let last = performance.now();
 let resultsDelay = 0;
+//changing how the game feels near the end (slow motion) for dramatice effect
+const SLOWMO_TIME = 1.1;
+let slowmo = 0;
 
 function frame(now) {
   requestAnimationFrame(frame);
@@ -283,6 +286,7 @@ function frame(now) {
       if (fight.done) {
         audio.stopMotor();
         resultsDelay = 2.2; // let the wreck burn for a moment
+        slowmo = SLOWMO_TIME;
       }
     } else {
       resultsDelay -= dt;
@@ -292,7 +296,13 @@ function frame(now) {
 
   // keep passing the finished fight during the results screen so the
   // camera and sparks do not snap away behind it
-  renderer.update(dt, fight);
+    let shownDt = dt;
+  if (slowmo > 0) {
+    slowmo = Math.max(0, slowmo - dt);
+    const scale = 0.25 + (1 - slowmo / SLOWMO_TIME) * 0.75;
+    shownDt = dt * scale;
+  }
+  renderer.update(shownDt, fight);
 }
 
 goTitle();
