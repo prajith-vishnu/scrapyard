@@ -82,3 +82,5 @@ Then open http://localhost:8000 in a browser.
 On older machines the game watches its own framerate for the first
 few seconds and automatically turns off bloom and drops shadow
 resolution if it is struggling.
+
+Btw the first commits share a timestamp because the project was built before I set up git, then imported in one pass multiple times to show how I built it.
