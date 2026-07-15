@@ -1,25 +1,25 @@
 # ScrapYard Wars
 
-A 3D robot building and battling game I built. You build a robot out
+A 3D robot building and battling game I built. You design a robot out
 of scrap parts, throw it in the arena, and watch it fight to the death.
 Points from each win unlock better parts, and your progress is saved
-in your browser.
+in your browser!
 
 Play it here: [scrapyard-eight.vercel.app](https://scrapyard-eight.vercel.app)
 
 ## Features
 
-- 3D game build mode with orbit camera, junk metal materials, and shadows
-- A junkyard on the edge of the city to fight in, at night: a dirt pit
+- 3D game build mode with an orbit camera, junk metal materials, and shadows
+- The game is set in a junkyard on the edge of the city to fight in, at night: a dirt pit
   walled in corrugated steel, bleachers with a crowd, walls of crushed
   cars, tire stacks, a crane frozen mid-drop, and a lit skyline behind
   it all with blinking towers and billboards
-- Thirteen parts to choose from: wheels, treads, hover pads, three hull sizes, a rip
+- Thirteen parts for you to choose from: wheels, treads, hover pads, three hull sizes, a rip
   saw, a drop hammer, an arc zapper, side spikes, two armor sets, and
   a patch kit
 - Three opponents each with varying difficulties: Rustbucket, the Mangler, and
   Goliath
-- Fights run themselves and you watch: both robots drive in and swing on their own
+- Fights run themselves and you just watch: both robots drive in and swing on their own
   clocks, so you live with your build choices
 - Real tradeoffs (choose what you think will work best): armor is heavy, heavy is slow, and slow gets zapped
   all the way in
@@ -31,7 +31,7 @@ Play it here: [scrapyard-eight.vercel.app](https://scrapyard-eight.vercel.app)
 - Ringside callouts when blood is drawn and hulls hit half
 - Eight achievements, including one for losing to the easiest robot
 - Part unlocks, best scores, and achievements persist between sessions
-- All sound effects generated in the browser with the Web Audio API
+- All sound effects are generated in the browser with the Web Audio API
 
 ## How to Play
 
